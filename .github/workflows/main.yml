@@ -3,7 +3,7 @@ name: Daily Project Maintenance
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -19,7 +19,7 @@ jobs:
 
       - name: Update activity log
         run: |
-          date -u +"Last maintenance: %Y-%m-%d" > activity.log
+          date -u +"Last maintenance: %Y-%m-%d %H:%M:%S UTC" > activity.log
 
       - name: Commit changes
         run: |
