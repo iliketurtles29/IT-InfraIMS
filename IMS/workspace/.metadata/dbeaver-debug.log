@@ -1,0 +1,103 @@
+2026-09-30 08:49:30.766 - DBeaver 26.1.5.202608161900 is starting
+2026-09-30 08:49:30.768 - OS: Windows 10 10.0 (amd64)
+2026-09-30 08:49:30.769 - Java version: 25.0.3 by Microsoft (64bit)
+2026-09-30 08:49:30.769 - Install path: 'C:\Program Files\DBeaver'
+2026-09-30 08:49:30.770 - Instance path: 'file:/C:/Users/MSS Admin/Documents/RENE CLERT BATERBONIA FILES/IMS/workspace/'
+2026-09-30 08:49:30.773 - Memory available 64Mb/1024Mb
+2026-09-30 08:49:30.790 - Initialize desktop platform...
+2026-09-30 08:49:32.778 - BounceCastle bundle found. Use JCE provider BC
+> Start Core File Systems [org.eclipse.core.filesystem 1.11.400.v20251107-0507]
+> Start Core Resource Management [org.eclipse.core.resources 3.24.0.v20260518-1150]
+> Start Team Support Core [org.eclipse.team.core 3.10.1000.v20260112-1030]
+> Start DBeaver UI Navigator [org.jkiss.dbeaver.ui.navigator 1.0.185.202608161900]
+> Start JFace Text [org.eclipse.jface.text 3.31.0.v20260428-1719]
+> Start Text [org.eclipse.text 3.14.700.v20260326-1107]
+2026-09-30 08:49:33.824 - Initialize base platform...
+2026-09-30 08:49:33.850 - Platform initialized (3059ms)
+2026-09-30 08:49:33.975 - 	Create display
+2026-09-30 08:49:34.953 - 	Patch workbench configuration
+2026-09-30 08:49:35.119 - 	Starting instance server at http://localhost:56910
+2026-09-30 08:49:35.134 - Run workbench
+> Start Eclipse e4 Workbench SWT [org.eclipse.e4.ui.workbench.swt 0.18.100.v20260430-1313]
+> Start Eclipse Application Services [org.eclipse.e4.core.services 2.5.400.v20260430-1313]
+> Start Eclipse UI Application Services [org.eclipse.e4.ui.services 1.6.700.v20260430-1313]
+> Start Eclipse e4 Progress View [org.eclipse.e4.ui.progress 0.5.100.v20260516-1214]
+> Start Eclipse Bindings Support [org.eclipse.e4.ui.bindings 0.15.100.v20260430-1313]
+> Start Eclipse e4 core commands [org.eclipse.e4.core.commands 1.1.800.v20260430-1313]
+> Start EMF XML/XMI Persistence [org.eclipse.emf.ecore.xmi 2.40.0.v20251210-1145]
+> Start Eclipse CSS SWT Theme Support [org.eclipse.e4.ui.css.swt.theme 0.15.100.v20260507-0340]
+> Start Eclipse e4 Workbench Add-ons [org.eclipse.e4.ui.workbench.addons.swt 1.6.100.v20260430-1313]
+> Start Eclipse e4 Workbench SWT Renderer [org.eclipse.e4.ui.workbench.renderers.swt 0.18.0.v20260508-0707]
+> Start Eclipse Dependency Injection Extensions [org.eclipse.e4.core.di.extensions 0.18.300.v20240413-1529]
+> Start DBeaver AI Model [org.jkiss.dbeaver.model.ai 2.0.28.202608161900]
+> Start DBeaver AI UI [org.jkiss.dbeaver.ui.ai 1.0.87.202608161900]
+> Start Eclipse CSS SWT Support [org.eclipse.e4.ui.css.swt 0.17.0.v20260516-1214]
+> Start Internet Connection Management [org.eclipse.core.net 1.5.900.v20260507-0401]
+> Start Equinox Java Authentication and Authorization Service (JAAS) [org.eclipse.equinox.security 1.4.700.v20250622-1644]
+> Start Internet Connection Management UI [org.eclipse.ui.net 1.6.0.v20251219-1227]
+> Start GEF Classic Draw2d [org.eclipse.draw2d 3.23.0.202605171958]
+> Start GEF Classic GEF (MVC) [org.eclipse.gef 3.26.0.202605171956]
+> Start Eclipse SDK Themes [org.eclipse.ui.themes 1.3.0.v20260508-0854]
+2026-09-30 08:49:41.133 - Configure workbench window
+> Start DBeaver Product Configuration UI [org.jkiss.dbeaver.ui.app.config 1.0.3.202608161900]
+Warning: NLS missing message: appearance_theme_hint in: org.jkiss.dbeaver.ui.app.config.nls.ProductConfigMessages
+> Start DBeaver UI Forms Toolkit [org.jkiss.dbeaver.ui.forms 1.0.13.202608161900]
+> Start JFace Data Binding [org.eclipse.core.databinding 1.13.700.v20251023-1511]
+> Start JFace Data Binding Properties [org.eclipse.core.databinding.property 1.10.500.v20250916-0931]
+> Start DBeaver Sample Database [org.jkiss.dbeaver.ui.config.sample 1.0.222.202608161900]
+> Start DBeaver SQL Model [org.jkiss.dbeaver.model.sql 1.0.175.202608161900]
+2026-09-30 08:49:42.241 - Total database drivers: 136 (136)
+> Start Default Text Editor [org.eclipse.ui.editors 3.22.0.v20260421-0620]
+> Start Text Editor Framework [org.eclipse.ui.workbench.texteditor 3.20.100.v20260505-0620]
+> Start Help System Core [org.eclipse.help 3.11.100.v20260408-1441]
+2026-09-30 09:24:37.085 - Create actions
+2026-09-30 09:24:50.724 - Initialize workbench window
+2026-09-30 09:24:50.781 - Finish initialization
+> Start DBeaver UI Editors - Data [org.jkiss.dbeaver.ui.editors.data 1.0.185.202608161900]
+> Start DBeaver UI Editors - SQL [org.jkiss.dbeaver.ui.editors.sql 1.0.185.202608161900]
+> Start DBeaver NIO Model [org.jkiss.dbeaver.model.nio 1.0.69.202608161900]
+> Start DBeaver Dashboard UI [org.jkiss.dbeaver.ui.dashboard 1.0.182.202608161900]
+> Start DBeaver ERD UI [org.jkiss.dbeaver.ui.editors.erd 3.1.26.202608161900]
+> Start DBeaver ERD Model [org.jkiss.dbeaver.model.erd 1.1.26.202608161900]
+2026-09-30 09:24:52.716 - Open external file(s) [[C:\Users\MSS Admin\Documents\RENE CLERT BATERBONIA FILES\IMS\db.sqlite3]]
+> Start DBeaver SQLite UI [org.jkiss.dbeaver.ext.sqlite.ui 1.0.155.202608161900]
+2026-09-30 09:24:52.882 - Open [https://dbeaver.io/product/version.xml]
+> Start DBeaver SQLite Model [org.jkiss.dbeaver.ext.sqlite 1.0.234.202608161900]
+2026-09-30 09:24:59.825 - Open [https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/maven-metadata.xml]
+2026-09-30 09:25:00.490 - Open [https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.53.4.0/sqlite-jdbc-3.53.4.0.pom]
+2026-09-30 09:25:00.595 - Open [https://repo1.maven.org/maven2/org/junit/junit-bom/5.12.2/junit-bom-5.12.2.pom]
+2026-09-30 09:25:02.643 - Open [https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.53.4.0/sqlite-jdbc-3.53.4.0.jar]
+2026-09-30 09:25:06.781 - Connect with 'File - C:\Users\MSS Admin\Documents\RENE CLERT BATERBONIA FILES\IMS\db.' (file_database_C_Users_MSS_Admin_Documents_RENE_CLERT_BATERBONI_208e14b2-0732-4dcf-9e88-a2e7dcf23d2f)
+> Start DBeaver JDBC Model [org.jkiss.dbeaver.model.jdbc 1.0.78.202608161900]
+> Start DBeaver Generic Plug-in [org.jkiss.dbeaver.ext.generic 2.3.271.202608161900]
+2026-09-30 09:25:06.908 - Execution context opened (File - C:\Users\MSS Admin\Documents\RENE CLERT BATERBONIA FILES\IMS\db.; Main; 0)
+2026-09-30 09:25:07.348 - Connected to a datasource:
+    id='file_database_C_Users_MSS_Admin_Documents_RENE_CLERT_BATERBONI_208e14b2-0732-4dcf-9e88-a2e7dcf23d2f',
+    databaseProductName='SQLite',
+    databaseProductVersion='3.53.4',
+    driverName='SQLite JDBC',
+    driverVersion='3.53.4.0'.
+
+> Start org.jkiss.bundle.gis [org.jkiss.bundle.gis 2.0.9]
+> Start DBeaver GIS Support [org.jkiss.dbeaver.data.gis 1.0.209.202608161900]
+2026-09-30 13:26:40.151 - Execution context closed (File - C:\Users\MSS Admin\Documents\RENE CLERT BATERBONIA FILES\IMS\db., 0)
+2026-09-30 13:26:40.162 - Disconnected (file_database_C_Users_MSS_Admin_Documents_RENE_CLERT_BATERBONI_208e14b2-0732-4dcf-9e88-a2e7dcf23d2f)
+2026-09-30 16:12:48.111 - Connect with 'File - C:\Users\MSS Admin\Documents\RENE CLERT BATERBONIA FILES\IMS\db.' (file_database_C_Users_MSS_Admin_Documents_RENE_CLERT_BATERBONI_208e14b2-0732-4dcf-9e88-a2e7dcf23d2f)
+2026-09-30 16:12:48.124 - Execution context opened (File - C:\Users\MSS Admin\Documents\RENE CLERT BATERBONIA FILES\IMS\db.; Main; 1)
+2026-09-30 16:12:48.140 - Connected to a datasource:
+    id='file_database_C_Users_MSS_Admin_Documents_RENE_CLERT_BATERBONI_208e14b2-0732-4dcf-9e88-a2e7dcf23d2f',
+    databaseProductName='SQLite',
+    databaseProductVersion='3.53.4',
+    driverName='SQLite JDBC',
+    driverVersion='3.53.4.0'.
+
+> Start Core Compare Support [org.eclipse.compare.core 3.8.800.v20250718-1505]
+2026-09-30 20:01:17.118 - Dispose navigator model
+2026-09-30 20:01:17.309 - DBeaver is stopping
+2026-09-30 20:01:17.315 - Stop instance server
+2026-09-30 20:01:17.325 - Instance server has been stopped
+2026-09-30 20:01:17.355 - DBeaver shutdown completed
+2026-09-30 20:01:17.507 - Shutdown desktop platform...
+2026-09-30 20:01:17.545 - Execution context closed (File - C:\Users\MSS Admin\Documents\RENE CLERT BATERBONIA FILES\IMS\db., 1)
+2026-09-30 20:01:17.546 - Disconnected (file_database_C_Users_MSS_Admin_Documents_RENE_CLERT_BATERBONI_208e14b2-0732-4dcf-9e88-a2e7dcf23d2f)
+2026-09-30 20:01:18.050 - Platform shutdown completed (535ms)

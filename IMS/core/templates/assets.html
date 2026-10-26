@@ -1,0 +1,1120 @@
+{% extends "base.html" %}
+
+{% block title %}GEMS IT · Assets{% endblock %}
+
+{% block breadcrumb %}Assets{% endblock %}
+
+{% block content %}
+<style>
+    body .badge.status-available {
+        background-color: #d1e7dd !important;
+        color: #0f5132 !important;
+        font-weight: 700;
+    }
+
+    body .badge.status-assigned {
+        background-color: #cfe2ff !important;
+        color: #084298 !important;
+        font-weight: 700;
+    }
+
+    body .badge.status-in_repair,
+    body .badge.status-in-repair {
+        background-color: #fff3cd !important;
+        border: 1px solid #ffecb5 !important;
+        color: #664d03 !important;
+        font-weight: 700;
+        -webkit-text-fill-color: #664d03 !important;
+    }
+
+    body .badge.status-retired {
+        background-color: #e2e3e5 !important;
+        color: #41464b !important;
+        font-weight: 700;
+    }
+
+    body .badge.status-lost {
+        background-color: #f8d7da !important;
+        color: #842029 !important;
+        font-weight: 700;
+    }
+
+    body .badge.condition-new,
+    body .badge.condition-good {
+        background-color: #d1e7dd !important;
+        color: #0f5132 !important;
+        font-weight: 700;
+    }
+
+    body .badge.condition-fair {
+        background-color: #fff3cd !important;
+        color: #664d03 !important;
+        font-weight: 700;
+    }
+
+    body .badge.condition-damaged {
+        background-color: #f8d7da !important;
+        color: #842029 !important;
+        font-weight: 700;
+    }
+
+    body .badge.condition-for_disposal {
+        background-color: #212529 !important;
+        color: #ffffff !important;
+        font-weight: 700;
+    }
+
+
+    /* Consistent visual system for the add-asset and JS-built action modals. */
+    .asset-modal-content {
+        overflow: hidden;
+        border: 0;
+        border-radius: 18px;
+        box-shadow: 0 24px 70px rgba(15, 23, 42, .20);
+    }
+
+    #addAssetModal .modal-dialog { max-width: 860px; }
+
+    .asset-modal-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.35rem 1.5rem;
+        color: #fff;
+        border: 0;
+        background: linear-gradient(135deg, #123b68, #2563a6);
+    }
+
+    .asset-modal-kicker {
+        margin-bottom: .3rem;
+        color: rgba(255,255,255,.72);
+        font-size: .66rem;
+        font-weight: 700;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+    }
+
+    .asset-modal-header .modal-title {
+        margin: 0;
+        color: #fff;
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: -.02em;
+    }
+
+    .asset-modal-subtitle {
+        margin: .35rem 0 0;
+        color: rgba(255,255,255,.78);
+        font-size: .88rem;
+    }
+
+    #addAssetModal .modal-body,
+    #assetModalBody { padding: 1.5rem; }
+
+    #addAssetModal .form-label,
+    #assetModalBody label {
+        margin-bottom: .4rem;
+        color: #344256;
+        font-size: .82rem;
+        font-weight: 650;
+    }
+
+    #addAssetModal .form-control,
+    #addAssetModal .form-select,
+    #assetModalBody .form-control,
+    #assetModalBody .form-select,
+    #assetModalBody textarea,
+    #assetModalBody input:not([type="checkbox"]):not([type="radio"]),
+    #assetModalBody select {
+        min-height: 44px;
+        border: 1px solid #dce3ec;
+        border-radius: 10px;
+        color: #172337;
+        background-color: #fff;
+        box-shadow: none;
+        transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    #assetModalBody textarea,
+    #addAssetModal textarea { min-height: 96px; }
+
+    #addAssetModal .form-control:focus,
+    #addAssetModal .form-select:focus,
+    #assetModalBody .form-control:focus,
+    #assetModalBody .form-select:focus,
+    #assetModalBody textarea:focus,
+    #assetModalBody input:focus,
+    #assetModalBody select:focus {
+        border-color: #77aee4;
+        box-shadow: 0 0 0 3px rgba(38,116,200,.12);
+        outline: 0;
+    }
+
+    #addAssetModal .modal-footer,
+    #assetModalFooter {
+        gap: .55rem;
+        padding: 1rem 1.5rem 1.35rem;
+        border-top: 1px solid #edf0f4;
+        background: #fff;
+    }
+
+    #addAssetModal .modal-footer .btn,
+    #assetModalFooter .btn {
+        min-height: 42px;
+        padding: .55rem 1rem;
+        border-radius: 10px;
+        font-weight: 650;
+    }
+
+    #assetModalBody .alert,
+    #assetModalBody .card {
+        border-radius: 12px;
+    }
+
+    #assetModalBody .form-text,
+    #assetModalBody small.text-muted { color: #78869a !important; }
+
+    @media (max-width: 575.98px) {
+        #addAssetModal .modal-body,
+        #assetModalBody { padding: 1.1rem; }
+        .asset-modal-header { padding: 1.1rem; }
+        #addAssetModal .modal-footer,
+        #assetModalFooter { padding: .9rem 1.1rem 1.1rem; }
+    }
+
+</style>
+{% if messages %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    {% for message in messages %}
+        window.showToast?.("{{ message|escapejs }}");
+    {% endfor %}
+});
+</script>
+{% endif %}
+<script>
+    window.assetEmployees = [
+        {% for employee in employees %}
+        {
+            id: "{{ employee.employee_id|escapejs }}",
+            name: "{{ employee.name|escapejs }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+</script>
+<script>
+    window.assetTypes = [
+        {% for asset_type in asset_types %}
+        {
+            name: "{{ asset_type.name|escapejs }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    window.assetDepartments = [
+        {% for department in departments %}
+        {
+            name: "{{ department.name|escapejs }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    window.assetLocations = [
+        {% for location in locations %}
+        {
+            name: "{{ location.name|escapejs }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+</script>
+<script>
+    window.assetRepairUrlTemplate =
+        "{% url 'asset-repair' '__ASSET_TAG__' %}";
+</script>
+<script>
+    window.assetUpdateUrlTemplate =
+        "{% url 'asset-update' '__ASSET_TAG__' %}";
+</script>
+<script>
+    window.assetTransferUrlTemplate =
+        "{% url 'asset-transfer' '__ASSET_TAG__' %}";
+</script>
+<script>
+    window.assetReturnUrlTemplate =
+        "{% url 'asset-return' '__ASSET_TAG__' %}";
+</script>
+
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <div class="eyebrow">Inventory control</div>
+        <h2 class="page-title">All assets</h2>
+        <p class="muted mb-0">
+            Track all device.
+        </p>
+    </div>
+
+    <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#addAssetModal">
+        <i class="bi bi-plus-lg me-2"></i>
+        Add asset
+    </a>
+</div>
+<script>
+    window.assetAssignUrlTemplate =
+        "{% url 'asset-assign' '__ASSET_TAG__' %}";
+
+    window.assetCsrfToken = "{{ csrf_token }}";
+</script>
+
+
+<div class="card p-3 mb-3">
+    <form method="get">
+        <div class="toolbar">
+            <div class="input-group flex-grow-1">
+                <span class="input-group-text bg-white">
+                    <i class="bi bi-search"></i>
+                </span>
+
+                <input
+                    id="assetSearch"
+                    name="q"
+                    class="form-control"
+                    type="search"
+                    value="{{ search_query|default:'' }}"
+                    placeholder="Search asset tag, brand, serial or assignee"
+                >
+            </div>
+
+            <select
+                id="assetStatusFilter"
+                name="status"
+                class="form-select"
+            >
+                <option value="">All statuses</option>
+
+                {% for value, label in asset_statuses %}
+                    <option
+                        value="{{ value }}"
+                        {% if selected_status == value %}selected{% endif %}
+                    >
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <select
+                id="type"
+                name="type"
+                class="form-select"
+            >
+                <option value="">All types</option>
+
+                {% for asset_type in asset_types %}
+                    <option
+                        value="{{ asset_type.name }}"
+                        {% if selected_type == asset_type.name %}selected{% endif %}
+                    >
+                        {{ asset_type.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button
+                type="submit"
+                class="btn btn-outline-secondary"
+            >
+                <i class="bi bi-funnel me-2"></i>
+                Filter
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-outline-secondary"
+                data-export-assets
+            >
+                <i class="bi bi-download me-2"></i>
+                Export CSV
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="card table-card">
+    <div class="table-responsive">
+        <table id="assetTable" class="table table-hover mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Asset tag</th>
+                    <th>Type</th>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Serial</th>
+                    <th>Status</th>
+                    <th>Assigned to</th>
+                    <th>Department</th>
+                    <th>Location</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for asset in assets reversed %}
+                    <tr
+                        data-asset-row
+                        data-asset-tag="{{ asset.asset_tag }}"
+                        data-asset-type="{{ asset.asset_type.name }}"
+                        data-brand="{{ asset.brand }}"
+                        data-model="{{ asset.model }}"
+                        data-serial="{{ asset.serial_number }}"
+                        data-condition="{{ asset.condition }}"
+                        data-purchase-date="{{ asset.purchase_date|date:'Y-m-d' }}"
+                        data-warranty="{{ asset.warranty_expiration|date:'Y-m-d' }}"
+                        data-department="{{ asset.department.name }}"
+                        data-location="{{ asset.location.name }}"
+                        data-status="{{ asset.status }}"
+                        data-type="{{ asset.asset_type.name }}"
+                    >
+                        <td>
+                            <a class="tag" href="{% url 'asset-details' asset.asset_tag %}">
+                                {{ asset.asset_tag }}
+                            </a>
+                        </td>
+
+                        <td>{{ asset.asset_type.name }}</td>
+                        <td>{{ asset.brand }}</td>
+                        <td>{{ asset.model }}</td>
+
+                        <td class="text-muted">
+                            {{ asset.serial_number }}
+                        </td>
+
+                        <td>
+                            <div class="d-flex flex-column align-items-start gap-1">
+                                <span class="badge status-{{ asset.status }}">
+                                    {{ asset.get_status_display }}
+                                </span>
+                                <span class="badge condition-{{ asset.condition }}">
+                                    {{ asset.get_condition_display }}
+                                </span>
+                            </div>
+                        </td>
+
+                        <td>
+                            {% if asset.current_assignments %}
+                                <div class="d-flex flex-column gap-1">
+                                    {% for assignment in asset.current_assignments %}
+                                        <span class="d-flex align-items-center gap-2">
+                                            <span class="avatar">
+                                                {{ assignment.employee.name|slice:':1' }}
+                                            </span>
+                                            {{ assignment.employee.name }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span class="muted">Unassigned</span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ asset.department.name }}</td>
+                        <td>{{ asset.location.name }}</td>
+
+                        <td class="text-end">
+                            <div class="d-none" aria-hidden="true">
+                                {% for assignment in asset.current_assignments %}
+                                    <span
+                                        data-current-assignment
+                                        data-assignment-id="{{ assignment.pk }}"
+                                        data-employee-id="{{ assignment.employee_id }}"
+                                        data-employee-name="{{ assignment.employee.name }}"
+                                    ></span>
+                                {% endfor %}
+                            </div>
+                            <div class="dropdown">
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-light"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    aria-label="Actions for {{ asset.asset_tag }}"
+                                >
+                                    <i class="bi bi-three-dots"></i>
+                                </button>
+
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'asset-details' asset.asset_tag %}">
+                                            <i class="bi bi-eye me-2"></i>
+                                            View
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="#" data-bs-toggle="modal" data-bs-target="#assetModal" data-modal-action="edit" data-asset-tag="{{ asset.asset_tag }}"
+                                        >
+                                            <i class="bi bi-pencil me-2"></i>
+                                            Edit
+                                        </a>
+                                    </li>
+
+                                    {% if asset.status == 'in_repair' or asset.condition == 'damaged' %}
+                                        <li>
+                                            <a
+                                                class="dropdown-item"
+                                                href="#"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#assetModal"
+                                                data-modal-action="repair"
+                                                data-asset-tag="{{ asset.asset_tag }}"
+                                            >
+                                                <i class="bi bi-tools me-2"></i>
+                                                Complete repair
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if asset.status == 'assigned' %}
+                                        <li>
+                                            <a
+                                                class="dropdown-item"
+                                                href="#"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#assetModal"
+                                                data-modal-action="assign"
+                                                data-asset-tag="{{ asset.asset_tag }}"
+                                            >
+                                                <i class="bi bi-person-plus me-2"></i>
+                                                Assign another employee
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a
+                                                class="dropdown-item"
+                                                href="#" data-bs-toggle="modal" data-bs-target="#assetModal" data-modal-action="return" data-asset-tag="{{ asset.asset_tag }}"
+                                            >
+                                                <i class="bi bi-box-arrow-in-down me-2"></i>
+                                                Return
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <button
+                                                type="button"
+                                                class="dropdown-item"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#assetTransferModal"
+                                                data-asset-tag="{{ asset.asset_tag }}"
+                                            >
+                                                <i class="bi bi-arrow-left-right me-2"></i>
+                                                Transfer an employee
+                                            </button>
+                                        </li>
+                                    {% elif asset.status == 'available' and asset.condition != 'damaged' and asset.condition != 'for_disposal' %}
+                                        <li>
+                                            <a
+                                                class="dropdown-item"
+                                                href="#" data-bs-toggle="modal" data-bs-target="#assetModal" data-modal-action="assign" data-asset-tag="{{ asset.asset_tag }}"
+                                            >
+                                                <i class="bi bi-person-plus me-2"></i>
+                                                Assign
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li>
+                                            <span class="dropdown-item-text text-muted">
+                                                <i class="bi bi-lock me-2"></i>
+                                                Cannot assign until repaired
+                                            </span>
+                                        </li>
+                                    {% endif %}
+
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item text-danger"
+                                            href="#" data-bs-toggle="modal" data-bs-target="#assetModal" data-modal-action="retire" data-asset-tag="{{ asset.asset_tag }}"
+                                        >
+                                            <i class="bi bi-archive me-2"></i>
+                                            Retire
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="10" class="empty">
+                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                            No assets match your filters.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center p-3 border-top">
+        <span class="muted small" id="assetResultCount">
+            Showing {{ assets|length }} asset{{ assets|length|pluralize }}
+        </span>
+    </div>
+</div>
+
+<!-- Add asset: a real Django form, posted directly, no JS/JSON involved -->
+<div class="modal fade" id="addAssetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content asset-modal-content">
+            <form method="post" action="{% url 'asset-create' %}">
+                {% csrf_token %}
+                <div class="modal-header asset-modal-header">
+                    <div>
+                        <div class="asset-modal-kicker">Inventory control</div>
+                        <h5 class="modal-title"><i class="bi bi-box-seam me-2"></i>Add asset</h5>
+                        <p class="asset-modal-subtitle">Add a device to your inventory and keep its details organized.</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="modalAssetTag" class="form-label">Asset Tag *</label>
+                            <input id="modalAssetTag" name="asset_tag" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="modalAssetType" class="form-label">Asset Type *</label>
+                            <select id="modalAssetType" name="asset_type" class="form-select" required>
+                                <option value="">Select type</option>
+                                {% for asset_type in asset_types reversed %}
+                                    <option value="{{ asset_type.name }}">{{ asset_type.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="modalBrand" class="form-label">Brand</label>
+                            <input id="modalBrand" name="brand" class="form-control">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="modalModel" class="form-label">Model</label>
+                            <input id="modalModel" name="model" class="form-control">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="modalSerial" class="form-label">Serial Number</label>
+                            <input id="modalSerial" name="serial_number" class="form-control">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="modalCondition" class="form-label">Condition</label>
+                            <select id="modalCondition" name="condition" class="form-select">
+                                <option value="new" selected>New</option>
+                                <option value="good">Good</option>
+                                <option value="fair">Fair</option>
+                                <option value="damaged">Damaged</option>
+                                <option value="for_disposal">For Disposal</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="modalPurchaseDate" class="form-label">Purchase Date</label>
+                            <input id="modalPurchaseDate" name="purchase_date" type="date" class="form-control">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="modalWarranty" class="form-label">Warranty Expiration</label>
+                            <input id="modalWarranty" name="warranty_expiration" type="date" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="modalDepartment" class="form-label">Department *</label>
+                            <select id="modalDepartment" name="department" class="form-select" required>
+                                <option value="">Select department</option>
+                                {% for department in departments %}
+                                    <option value="{{ department.name }}">{{ department.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="modalLocation" class="form-label">Location *</label>
+                            <select id="modalLocation" name="location" class="form-select" required>
+                                <option value="">Select location</option>
+                                {% for location in locations %}
+                                    <option value="{{ location.name }}">{{ location.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create asset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="assetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content asset-modal-content">
+            <div class="modal-header asset-modal-header">
+                <div>
+                    <div class="asset-modal-kicker">Asset workflow</div>
+                    <h5 class="modal-title" id="assetModalTitle">Asset</h5>
+                    <p class="asset-modal-subtitle">Review the details and confirm your changes.</p>
+                </div>
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+
+            <div class="modal-body" id="assetModalBody"></div>
+
+            <div class="modal-footer" id="assetModalFooter">
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    data-bs-dismiss="modal"
+                >
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="assetTransferModal" tabindex="-1" aria-labelledby="assetTransferTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable transfer-dialog">
+        <div class="modal-content transfer-modal asset-modal-content">
+            <form id="assetTransferForm" method="post">
+                {% csrf_token %}
+                <div class="transfer-header asset-modal-header">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="asset-modal-kicker">ASSET WORKFLOW</span>
+                            <h5 class="modal-title mt-2" id="assetTransferTitle">Transfer assignment</h5>
+                            <p class="asset-modal-subtitle mb-0">Move one employee's assignment to another employee.</p>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="transfer-asset-chip mt-3">
+                        <span class="transfer-asset-icon"><i class="bi bi-laptop"></i></span>
+                        <span>
+                            <small>ASSET TAG</small>
+                            <strong id="transferAssetTag">—</strong>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="modal-body transfer-body">
+                    <section class="transfer-section-card">
+                        <div class="transfer-section-label mb-2"><span class="transfer-step">1</span>Choose the assignment to transfer</div>
+                    <div id="transferAssignmentChoices" class="transfer-assignment-list"></div>
+                        <div class="form-text">Only the selected employee's assignment will be transferred. Other assignees stay assigned.</div>
+                    </section>
+
+                    <section class="transfer-section-card">
+                        <div class="transfer-section-label mb-3"><span class="transfer-step">2</span>Choose the new employee</div>
+                    <select id="transferRecipient" name="employee" class="form-select form-select-lg mb-4">
+                        <option value="">Select a receiving employee</option>
+                    </select>
+
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label for="transferStartDate" class="form-label fw-semibold">Effective date</label>
+                            <input id="transferStartDate" type="date" name="start_date" class="form-control">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="transferRemarks" class="form-label fw-semibold">Note <span class="text-muted fw-normal">(optional)</span></label>
+                            <input id="transferRemarks" type="text" name="remarks" class="form-control" maxlength="500" placeholder="Add a short note">
+                        </div>
+                    </div>
+                        <div id="transferNoRecipients" class="alert alert-info d-none mt-3 mb-0" role="status">
+                            There are no other active employees available to receive this asset.
+                        </div>
+                    </section>
+                </div>
+
+                <div class="modal-footer transfer-footer">
+                    <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button id="transferRemoveSubmit" type="submit" name="transfer_action" value="remove" class="btn btn-outline-danger px-3">
+                        <i class="bi bi-person-dash me-2"></i>Remove assignee
+                    </button>
+                    <button id="transferSubmit" type="submit" name="transfer_action" value="transfer" class="btn btn-primary px-4">
+                        <i class="bi bi-arrow-left-right me-2"></i>Confirm transfer
+                    </button>
+                </div>
+
+                <div id="removeAssigneeConfirmation" class="remove-confirm-overlay d-none" aria-hidden="true">
+                    <div class="remove-confirm-card" role="alertdialog" aria-modal="true" aria-labelledby="removeAssigneeTitle" aria-describedby="removeAssigneeMessage" tabindex="-1">
+                        <div class="remove-confirm-icon"><i class="bi bi-person-dash"></i></div>
+                        <div class="remove-confirm-kicker">CONFIRM ASSIGNEE CHANGE</div>
+                        <h6 id="removeAssigneeTitle">Remove this assignee?</h6>
+                        <p id="removeAssigneeMessage" class="remove-confirm-message"></p>
+                        <div class="remove-confirm-note"><i class="bi bi-clock-history me-2"></i>The assignment history will be kept.</div>
+                        <div class="remove-confirm-actions">
+                            <button id="cancelRemoveAssignee" type="button" class="btn btn-light">Keep assignment</button>
+                            <button id="confirmRemoveAssignee" type="button" class="btn btn-danger"><i class="bi bi-person-dash me-2"></i>Remove assignee</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .transfer-modal { border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 24px 70px rgba(15, 23, 42, .24); }
+    .transfer-header { padding: 1.5rem 1.5rem 1.25rem; color: #fff; background: linear-gradient(135deg, #123b68, #2563a6); }
+    .transfer-eyebrow { font-size: .68rem; font-weight: 700; letter-spacing: .13em; opacity: .75; }
+    .transfer-subtitle { color: rgba(255,255,255,.78); font-size: .9rem; }
+    .transfer-asset-chip { display: inline-flex; align-items: center; gap: .7rem; padding: .55rem .8rem; border: 1px solid rgba(255,255,255,.22); border-radius: 12px; background: rgba(255,255,255,.12); }
+    .transfer-asset-chip small { display: block; font-size: .62rem; letter-spacing: .1em; opacity: .72; }
+    .transfer-asset-chip strong { display: block; font-size: .92rem; }
+    .transfer-asset-icon { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 10px; background: rgba(255,255,255,.16); }
+    .transfer-section-label { color: #26364a; font-size: .9rem; font-weight: 700; }
+    .transfer-assignment-list { display: grid; gap: .55rem; }
+    .transfer-assignee-option { display: flex; align-items: center; gap: .75rem; padding: .75rem .85rem; border: 1px solid #dce3ec; border-radius: 12px; cursor: pointer; transition: border-color .15s, background-color .15s, box-shadow .15s; }
+    .transfer-assignee-option:hover { border-color: #8bb8e8; background: #f7fbff; }
+    .transfer-assignee-option:has(input:checked) { border-color: #2674c8; background: #eff7ff; box-shadow: 0 0 0 3px rgba(38,116,200,.1); }
+    .transfer-assignee-option input { margin: 0; }
+    .transfer-assignee-avatar { display: grid; flex: 0 0 38px; width: 38px; height: 38px; place-items: center; border-radius: 50%; color: #1e5a94; background: #e4f0fc; font-weight: 700; }
+    .transfer-assignee-name { color: #1e293b; font-weight: 600; }
+    .transfer-assignee-caption { color: #748196; font-size: .78rem; }
+    #assetTransferModal .form-control, #assetTransferModal .form-select { border-color: #dce3ec; border-radius: 10px; }
+    @supports not selector(:has(*)) { .transfer-assignee-option input:checked { accent-color: #2674c8; } }
+
+    .transfer-modal { position: relative; }
+    #assetTransferModal .remove-confirm-overlay {
+        position: absolute;
+        z-index: 10;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 1.25rem;
+        border-radius: inherit;
+        background: rgba(14, 29, 48, .48);
+        backdrop-filter: blur(5px);
+    }
+    #assetTransferModal .remove-confirm-overlay.d-none { display: none !important; }
+    #assetTransferModal .remove-confirm-card {
+        width: min(100%, 390px);
+        padding: 1.5rem;
+        border: 1px solid rgba(226,232,240,.9);
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 24px 70px rgba(15,23,42,.25);
+        text-align: center;
+        animation: removeConfirmIn .18s ease-out;
+    }
+    #assetTransferModal .remove-confirm-icon {
+        display: grid;
+        width: 52px;
+        height: 52px;
+        margin: 0 auto .9rem;
+        place-items: center;
+        border-radius: 16px;
+        color: #b42318;
+        background: #fff0ee;
+        font-size: 1.35rem;
+    }
+    #assetTransferModal .remove-confirm-kicker {
+        margin-bottom: .35rem;
+        color: #9b6470;
+        font-size: .65rem;
+        font-weight: 750;
+        letter-spacing: .13em;
+    }
+    #assetTransferModal .remove-confirm-card h6 {
+        margin-bottom: .55rem;
+        color: #1e2d42;
+        font-size: 1.1rem;
+        font-weight: 750;
+    }
+    #assetTransferModal .remove-confirm-message {
+        margin-bottom: .75rem;
+        color: #546377;
+        font-size: .9rem;
+        line-height: 1.5;
+    }
+    #assetTransferModal .remove-confirm-note {
+        margin-bottom: 1.1rem;
+        padding: .65rem .75rem;
+        border-radius: 10px;
+        color: #53667c;
+        background: #f4f7fa;
+        font-size: .78rem;
+    }
+    #assetTransferModal .remove-confirm-actions { display: flex; justify-content: center; gap: .55rem; flex-wrap: wrap; }
+    #assetTransferModal .remove-confirm-actions .btn { min-height: 42px; padding: .55rem .9rem; border-radius: 10px; font-weight: 650; }
+    @keyframes removeConfirmIn { from { opacity: 0; transform: translateY(6px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+
+    /* Match all asset workflows to the Add Asset modal and keep controls usable on short screens. */
+    #addAssetModal .modal-dialog,
+    #assetModal .modal-dialog,
+    #assetTransferModal .modal-dialog {
+        height: calc(100% - var(--bs-modal-margin) * 2);
+        max-height: calc(100vh - 1rem);
+    }
+    #addAssetModal .modal-content,
+    #assetModal .modal-content,
+    #assetTransferModal .modal-content {
+        display: flex;
+        max-height: 100%;
+        overflow: hidden;
+        border: 0;
+        border-radius: 18px;
+        box-shadow: 0 24px 70px rgba(15, 23, 42, .20);
+    }
+    #addAssetModal .modal-content > form,
+    #assetTransferModal .modal-content > form {
+        display: flex;
+        min-height: 0;
+        flex: 1 1 auto;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    #addAssetModal .modal-header,
+    #assetModal .modal-header,
+    #assetTransferModal .modal-header,
+    #addAssetModal .modal-footer,
+    #assetModal .modal-footer,
+    #assetTransferModal .modal-footer { flex: 0 0 auto; }
+    #addAssetModal .modal-body,
+    #assetModal .modal-body,
+    #assetTransferModal .modal-body {
+        min-height: 0;
+        flex: 1 1 auto;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+    #assetModal .modal-body { padding: 1.5rem; }
+    #assetModal .modal-footer {
+        gap: .55rem;
+        padding: 1rem 1.5rem 1.35rem;
+        border-top: 1px solid #edf0f4;
+        background: #fff;
+    }
+    #assetModal .modal-footer .btn,
+    #assetTransferModal .modal-footer .btn {
+        min-height: 42px;
+        padding: .55rem 1rem;
+        border-radius: 10px;
+        font-weight: 650;
+    }
+    #assetTransferModal .transfer-header { flex: 0 0 auto; }
+    #assetTransferModal .transfer-body {
+        display: grid;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        background: #f7f9fc;
+    }
+    #assetTransferModal .transfer-section-card {
+        padding: 1.1rem;
+        border: 1px solid #e6ebf2;
+        border-radius: 14px;
+        background: #fff;
+    }
+    #assetTransferModal .transfer-section-label {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        color: #25364c;
+        font-size: .9rem;
+        font-weight: 720;
+    }
+    #assetTransferModal .transfer-step {
+        display: inline-grid;
+        width: 25px;
+        height: 25px;
+        place-items: center;
+        border-radius: 50%;
+        color: #23659f;
+        background: #eaf4fc;
+        font-size: .75rem;
+        font-weight: 750;
+    }
+    #assetTransferModal .transfer-footer {
+        gap: .55rem;
+        padding: 1rem 1.5rem 1.25rem;
+        border-top: 1px solid #edf0f4;
+        background: #fff;
+    }
+    @media (max-width: 575.98px) {
+        #assetModal .modal-body { padding: 1rem; }
+        #assetTransferModal .transfer-body { padding: 1rem; }
+        #assetTransferModal .transfer-section-card { padding: .9rem; }
+        #assetModal .modal-footer,
+        #assetTransferModal .transfer-footer { padding: .9rem 1rem 1rem; }
+    }
+</style>
+
+<script>
+(() => {
+    const modal = document.getElementById("assetTransferModal");
+    const form = document.getElementById("assetTransferForm");
+    if (!modal || !form) return;
+
+    const choices = document.getElementById("transferAssignmentChoices");
+    const recipient = document.getElementById("transferRecipient");
+    const noRecipients = document.getElementById("transferNoRecipients");
+    const submit = document.getElementById("transferSubmit");
+    const removeSubmit = document.getElementById("transferRemoveSubmit");
+    const confirmation = document.getElementById("removeAssigneeConfirmation");
+    const confirmationMessage = document.getElementById("removeAssigneeMessage");
+    const confirmRemove = document.getElementById("confirmRemoveAssignee");
+    const cancelRemove = document.getElementById("cancelRemoveAssignee");
+    const dateInput = document.getElementById("transferStartDate");
+    let removalConfirmed = false;
+
+    const closeConfirmation = () => {
+        confirmation.classList.add("d-none");
+        confirmation.setAttribute("aria-hidden", "true");
+    };
+    const localDate = () => {
+        const now = new Date();
+        return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    };
+
+    modal.addEventListener("show.bs.modal", (event) => {
+        removalConfirmed = false;
+        closeConfirmation();
+        const trigger = event.relatedTarget;
+        const row = trigger?.closest("tr[data-asset-row]");
+        if (!row) return;
+
+        const assetTag = trigger.dataset.assetTag || row.dataset.assetTag || "";
+        document.getElementById("transferAssetTag").textContent = assetTag;
+        form.action = window.assetTransferUrlTemplate.replace("__ASSET_TAG__", encodeURIComponent(assetTag));
+
+        const assignments = Array.from(row.querySelectorAll("[data-current-assignment]"));
+        choices.replaceChildren();
+        const currentEmployeeIds = new Set();
+
+        assignments.forEach((item, index) => {
+            const assignmentId = item.dataset.assignmentId;
+            const employeeId = item.dataset.employeeId;
+            const employeeName = item.dataset.employeeName || employeeId;
+            currentEmployeeIds.add(String(employeeId));
+
+            const label = document.createElement("label");
+            label.className = "transfer-assignee-option";
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = "assignment_id";
+            radio.value = assignmentId;
+            radio.required = true;
+            radio.className = "form-check-input";
+            if (index === 0) radio.checked = true;
+
+            const avatar = document.createElement("span");
+            avatar.className = "transfer-assignee-avatar";
+            avatar.textContent = employeeName.trim().charAt(0).toUpperCase() || "?";
+
+            const copy = document.createElement("span");
+            const name = document.createElement("span");
+            name.className = "transfer-assignee-name d-block";
+            name.textContent = employeeName;
+            const caption = document.createElement("span");
+            caption.className = "transfer-assignee-caption d-block";
+            caption.textContent = `Employee ID: ${employeeId}`;
+            copy.append(name, caption);
+            label.append(radio, avatar, copy);
+            choices.append(label);
+        });
+
+        if (!assignments.length) {
+            const note = document.createElement("div");
+            note.className = "alert alert-warning mb-0";
+            note.textContent = "No active employee assignments were found for this asset.";
+            choices.append(note);
+        }
+
+        recipient.replaceChildren(new Option("Select a receiving employee", ""));
+        (window.assetEmployees || [])
+            .filter((employee) => !currentEmployeeIds.has(String(employee.id)))
+            .forEach((employee) => recipient.add(new Option(employee.name, employee.id)));
+
+        const canTransfer = assignments.length > 0 && recipient.options.length > 1;
+        noRecipients.classList.toggle("d-none", recipient.options.length > 1);
+        recipient.disabled = recipient.options.length <= 1;
+        submit.disabled = !canTransfer;
+        removeSubmit.disabled = assignments.length === 0;
+        dateInput.value = localDate();
+        form.querySelector("[name='remarks']").value = "";
+    });
+
+    form.addEventListener("submit", (event) => {
+        const action = event.submitter?.value || "transfer";
+        const selectedAssignment = form.querySelector("input[name='assignment_id']:checked");
+
+        if (!selectedAssignment) {
+            event.preventDefault();
+            return;
+        }
+
+        if (!dateInput.value) {
+            event.preventDefault();
+            dateInput.focus();
+            dateInput.reportValidity();
+            return;
+        }
+
+        if (action === "remove") {
+            if (!removalConfirmed) {
+                event.preventDefault();
+                const employeeName = selectedAssignment
+                    .closest(".transfer-assignee-option")
+                    ?.querySelector(".transfer-assignee-name")
+                    ?.textContent.trim() || "this employee";
+                confirmationMessage.textContent = `Remove ${employeeName} from this asset?`;
+                confirmation.classList.remove("d-none");
+                confirmation.setAttribute("aria-hidden", "false");
+                confirmRemove.focus();
+            } else {
+                removalConfirmed = false;
+            }
+            return;
+        }
+
+        if (!recipient.value) {
+            event.preventDefault();
+            recipient.setCustomValidity("Choose a receiving employee to transfer this assignment.");
+            recipient.reportValidity();
+            recipient.addEventListener("change", () => recipient.setCustomValidity(""), { once: true });
+        }
+    });
+
+    cancelRemove.addEventListener("click", () => {
+        closeConfirmation();
+        removeSubmit.focus();
+    });
+
+    confirmRemove.addEventListener("click", () => {
+        removalConfirmed = true;
+        closeConfirmation();
+        form.requestSubmit(removeSubmit);
+    });
+})();
+</script>
+
+
+{% endblock %}

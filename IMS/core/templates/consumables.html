@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}GEMS IT · Consumables{% endblock %}
+{% block breadcrumb %}Consumables{% endblock %}
+
+{% block content %}
+<style>
+    .consumables-page { color:#172337; }
+    .consumables-hero { display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:1.2rem; }
+    .consumables-hero h2 { margin:.2rem 0 .35rem; letter-spacing:-.04em; }
+    .hero-actions { display:flex; gap:.55rem; flex-wrap:wrap; }
+    .hero-actions .btn { min-height:42px; border-radius:11px; font-weight:700; }
+    .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:.75rem; margin-bottom:1rem; }
+    .metric { position:relative; overflow:hidden; padding:1rem; border:1px solid #dce7f1; border-radius:16px; background:#fff; box-shadow:0 9px 24px rgba(18,59,104,.05); }
+    .metric::after { content:""; position:absolute; right:-24px; bottom:-30px; width:90px; height:90px; border:15px solid rgba(26,166,163,.08); border-radius:50%; }
+    .metric-label { display:block; color:#6c7d90; font-size:.7rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+    .metric-value { display:block; margin-top:.25rem; color:#183b58; font-size:1.55rem; font-weight:800; }
+    .metric-note { color:#7c8b9a; font-size:.74rem; }
+    .dashboard-grid { display:grid; grid-template-columns:minmax(300px,.8fr) minmax(0,1.8fr); gap:1rem; align-items:start; }
+    .module-card { overflow:hidden; border:1px solid #dce6ef; border-radius:18px; background:#fff; box-shadow:0 12px 32px rgba(18,59,104,.06); }
+    .module-card-header { display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:1rem 1.1rem; border-bottom:1px solid #e7eef4; background:linear-gradient(120deg,#f7fbff,#f1faf9); }
+    .module-card-header strong { color:#21425f; }
+    .module-card-body { padding:1.1rem; }
+    .form-label { color:#52677b; font-size:.77rem; font-weight:750; }
+    .form-control,.form-select { min-height:42px; border-color:#d4e0eb; border-radius:10px; }
+    .form-control:focus,.form-select:focus { border-color:#2caaa5; box-shadow:0 0 0 4px rgba(44,170,165,.12); }
+    .search-bar { display:flex; gap:.55rem; margin-bottom:1rem; }
+    .search-bar .form-control,.search-bar .form-select { min-height:44px; }
+    .inventory-table { width:100%; border-collapse:collapse; }
+    .inventory-table th,.inventory-table td { padding:.72rem .75rem; border-bottom:1px solid #e7edf3; text-align:left; vertical-align:middle; }
+    .inventory-table th { color:#6a7b8c; background:#f7fafc; font-size:.68rem; font-weight:850; letter-spacing:.07em; text-transform:uppercase; }
+    .inventory-table td { color:#30465d; font-size:.82rem; }
+    .inventory-table tr:last-child td { border-bottom:0; }
+    .item-code { color:#146a9c; font-weight:800; text-decoration:none; }
+    .category-chip,.stock-chip { display:inline-flex; padding:.28rem .5rem; border-radius:999px; font-size:.68rem; font-weight:750; white-space:nowrap; }
+    .category-chip { color:#315a8a; background:#e9f1fb; }.stock-ok { color:#087f65; background:#dff7ed; }.stock-low { color:#a42318; background:#fde5e3; }
+    .move-form { display:flex; gap:.35rem; align-items:center; }
+    .move-form .form-control,.move-form .form-select { min-height:34px; padding:.3rem .45rem; font-size:.74rem; }
+    .move-form .form-select { width:100px; }.move-form .qty { width:60px; }
+    .move-form .btn { min-height:34px; padding:.3rem .55rem; }
+    @media (max-width:1000px) { .metrics { grid-template-columns:repeat(2,1fr); }.dashboard-grid { grid-template-columns:1fr; } }
+    @media (max-width:650px) { .consumables-hero { align-items:flex-start; flex-direction:column; }.metrics { grid-template-columns:1fr 1fr; }.search-bar { align-items:stretch; flex-direction:column; }.inventory-table { min-width:920px; } }
+</style>
+
+<div class="consumables-page">
+    <div class="consumables-hero">
+        <div><div class="eyebrow">IT infrastructure / Inventory</div><h2 class="page-title">Consumables</h2><p class="muted mb-0">Track batteries, cables, tools, adapters, peripherals, and other IT supplies.</p></div>
+        <div class="hero-actions"><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addConsumableModal"><i class="bi bi-plus-lg me-2"></i>Add consumable</button></div>
+    </div>
+
+    <div class="metrics">
+        <div class="metric"><span class="metric-label">Active items</span><span class="metric-value">{{ stats.total_items }}</span><span class="metric-note">Catalogued supplies</span></div>
+        <div class="metric"><span class="metric-label">Units on hand</span><span class="metric-value">{{ stats.total_units }}</span><span class="metric-note">Across all categories</span></div>
+        <div class="metric"><span class="metric-label">Low stock</span><span class="metric-value">{{ stats.low_stock }}</span><span class="metric-note">At or below reorder level</span></div>
+        <div class="metric"><span class="metric-label">Stock value</span><span class="metric-value">{{ stats.stock_value|floatformat:2 }}</span><span class="metric-note">Current estimated value</span></div>
+    </div>
+
+    <div class="dashboard-grid">
+        <section class="module-card">
+            <div class="module-card-header"><strong><i class="bi bi-box-seam me-2"></i>Inventory filters</strong></div>
+            <div class="module-card-body">
+                <form method="get">
+                    <label class="form-label">Search</label><input class="form-control mb-3" type="search" name="q" value="{{ search_query }}" placeholder="Code, item, supplier or location">
+                    <label class="form-label">Category</label><select class="form-select mb-3" name="category"><option value="">All categories</option>{% for value,label in category_choices %}<option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+                    <label class="form-label">Stock status</label><select class="form-select mb-3" name="stock"><option value="">All stock</option><option value="low" {% if selected_stock_filter == "low" %}selected{% endif %}>Low stock only</option></select>
+                    <button class="btn btn-dark w-100" type="submit"><i class="bi bi-search me-2"></i>Apply filters</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="module-card">
+            <div class="module-card-header"><strong><i class="bi bi-list-check me-2"></i>Consumable stock</strong><span class="muted small">{{ items|length }} shown</span></div>
+            <div class="table-responsive"><table class="inventory-table"><thead><tr><th>Item</th><th>Category</th><th>On hand</th><th>Location</th><th>Quick movement</th></tr></thead><tbody>
+                {% for item in items %}<tr><td><a class="item-code" href="{% url 'consumable-detail' item.pk %}">{{ item.item_code }}</a><div>{{ item.name }}</div></td><td><span class="category-chip">{{ item.get_category_display }}</span></td><td><span class="stock-chip {% if item.is_low_stock %}stock-low{% else %}stock-ok{% endif %}">{{ item.quantity_on_hand }} {{ item.unit }}{% if item.is_low_stock %} · Low{% endif %}</span><div class="small text-muted">Reorder at {{ item.reorder_level }}</div></td><td>{{ item.storage_location|default:"—" }}</td><td><form class="move-form" method="post" action="{% url 'consumable-stock-move' item.pk %}">{% csrf_token %}<select class="form-select" name="movement_type"><option value="received">Stock in</option><option value="issued">Stock out</option><option value="adjusted">Set balance</option></select><input class="form-control qty" type="number" name="quantity" min="1" value="1" aria-label="Quantity"><button class="btn btn-outline-primary" type="submit"><i class="bi bi-arrow-repeat"></i></button></form></td></tr>{% empty %}<tr><td colspan="5" class="text-center py-5 text-muted">No consumables found.</td></tr>{% endfor %}
+            </tbody></table></div>
+        </section>
+    </div>
+</div>
+
+<div class="modal fade" id="addConsumableModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content border-0 rounded-4"><form method="post">{% csrf_token %}<div class="modal-header"><h5 class="modal-title"><i class="bi bi-box-seam me-2"></i>Add consumable</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row g-3"><div class="col-md-4"><label class="form-label">Item code *</label><input class="form-control" name="item_code" placeholder="BAT-LAP-01" required></div><div class="col-md-8"><label class="form-label">Name *</label><input class="form-control" name="name" placeholder="Laptop battery" required></div><div class="col-md-6"><label class="form-label">Category *</label><select class="form-select" name="category" required><option value="">Select category</option>{% for value,label in category_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></div><div class="col-md-3"><label class="form-label">Unit</label><input class="form-control" name="unit" value="piece"></div><div class="col-md-3"><label class="form-label">Opening stock</label><input class="form-control" type="number" name="quantity_on_hand" min="0" value="0"></div><div class="col-md-4"><label class="form-label">Reorder level</label><input class="form-control" type="number" name="reorder_level" min="0" value="1"></div><div class="col-md-4"><label class="form-label">Unit cost</label><input class="form-control" type="number" name="unit_cost" min="0" step="0.01" value="0.00"></div><div class="col-md-4"><label class="form-label">Supplier</label><input class="form-control" name="supplier"></div><div class="col-md-6"><label class="form-label">Storage location</label><input class="form-control" name="storage_location" placeholder="IT Store Room"></div><div class="col-md-6"><label class="form-label">Description</label><input class="form-control" name="description" placeholder="Compatibility or usage notes"></div></div></div><div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" type="submit"><i class="bi bi-check2 me-2"></i>Add item</button></div></form></div></div></div>
+{% endblock %}

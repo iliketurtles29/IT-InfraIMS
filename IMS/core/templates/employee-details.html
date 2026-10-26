@@ -1,0 +1,757 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>GEMS IT · Employee Details</title>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+
+<body>
+    <div id="inventoryData" hidden aria-hidden="true">
+        <table id="seedAssets">
+            <thead>
+                <tr>
+                    <th>tag</th>
+                    <th>type</th>
+                    <th>brand</th>
+                    <th>model</th>
+                    <th>serial</th>
+                    <th>status</th>
+                    <th>condition</th>
+                    <th>purchaseDate</th>
+                    <th>warranty</th>
+                    <th>department</th>
+                    <th>location</th>
+                    <th>employeeId</th>
+                    <th>notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IT-LAP-000123</td>
+                    <td>Laptop</td>
+                    <td>Dell</td>
+                    <td>Latitude 7440</td>
+                    <td>DL7440-123</td>
+                    <td>Assigned</td>
+                    <td>Good</td>
+                    <td>2025-01-10</td>
+                    <td>2028-01-10</td>
+                    <td>IT Operations</td>
+                    <td>Manila HQ</td>
+                    <td>E001</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-CHR-000032</td>
+                    <td>Laptop Charger</td>
+                    <td>Dell</td>
+                    <td>USB-C 90W</td>
+                    <td>CHG-032</td>
+                    <td>Available</td>
+                    <td>Good</td>
+                    <td>2025-02-12</td>
+                    <td>2027-02-12</td>
+                    <td>IT Operations</td>
+                    <td>Manila HQ</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-DES-000045</td>
+                    <td>Desktop Computer</td>
+                    <td>HP</td>
+                    <td>ProDesk 600 G6</td>
+                    <td>HPD-045</td>
+                    <td>Under Repair</td>
+                    <td>Fair</td>
+                    <td>2024-08-01</td>
+                    <td>2027-08-01</td>
+                    <td>Finance</td>
+                    <td>Manila HQ</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-PRN-000010</td>
+                    <td>Printer</td>
+                    <td>Brother</td>
+                    <td>HL-L8360CDW</td>
+                    <td>BR-PRN-010</td>
+                    <td>Available</td>
+                    <td>Good</td>
+                    <td>2024-05-18</td>
+                    <td>2027-05-18</td>
+                    <td>Finance</td>
+                    <td>Cebu Office</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-SCN-000005</td>
+                    <td>Scanner</td>
+                    <td>Epson</td>
+                    <td>WorkForce ES-580W</td>
+                    <td>EP-005</td>
+                    <td>Assigned</td>
+                    <td>Good</td>
+                    <td>2025-03-02</td>
+                    <td>2028-03-02</td>
+                    <td>Human Resources</td>
+                    <td>Manila HQ</td>
+                    <td>E005</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-MON-000045</td>
+                    <td>Monitor</td>
+                    <td>LG</td>
+                    <td>UltraFine 27UN850</td>
+                    <td>LG-045</td>
+                    <td>Assigned</td>
+                    <td>Excellent</td>
+                    <td>2025-01-20</td>
+                    <td>2028-01-20</td>
+                    <td>Marketing</td>
+                    <td>Manila HQ</td>
+                    <td>E004</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-PHN-000032</td>
+                    <td>Mobile Phone</td>
+                    <td>Apple</td>
+                    <td>iPhone 15</td>
+                    <td>APL-032</td>
+                    <td>Assigned</td>
+                    <td>Excellent</td>
+                    <td>2025-04-09</td>
+                    <td>2027-04-09</td>
+                    <td>Sales</td>
+                    <td>Cebu Office</td>
+                    <td>E003</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-LAP-000124</td>
+                    <td>Laptop</td>
+                    <td>Lenovo</td>
+                    <td>ThinkPad T14 Gen 4</td>
+                    <td>LN-124</td>
+                    <td>Assigned</td>
+                    <td>Good</td>
+                    <td>2025-05-03</td>
+                    <td>2028-05-03</td>
+                    <td>Sales</td>
+                    <td>Davao Office</td>
+                    <td>E008</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-LAP-000125</td>
+                    <td>Laptop</td>
+                    <td>Apple</td>
+                    <td>MacBook Air M3</td>
+                    <td>MB-125</td>
+                    <td>Available</td>
+                    <td>Excellent</td>
+                    <td>2025-06-11</td>
+                    <td>2028-06-11</td>
+                    <td>Marketing</td>
+                    <td>Remote</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-DES-000046</td>
+                    <td>Desktop Computer</td>
+                    <td>Dell</td>
+                    <td>OptiPlex 7010</td>
+                    <td>DO-046</td>
+                    <td>Assigned</td>
+                    <td>Good</td>
+                    <td>2024-10-16</td>
+                    <td>2027-10-16</td>
+                    <td>Finance</td>
+                    <td>Cebu Office</td>
+                    <td>E009</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-MON-000046</td>
+                    <td>Monitor</td>
+                    <td>Dell</td>
+                    <td>P2422H</td>
+                    <td>DE-046</td>
+                    <td>Available</td>
+                    <td>Good</td>
+                    <td>2024-09-03</td>
+                    <td>2027-09-03</td>
+                    <td>IT Operations</td>
+                    <td>Warehouse A</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-PRN-000011</td>
+                    <td>Printer</td>
+                    <td>HP</td>
+                    <td>LaserJet Pro M404dn</td>
+                    <td>HP-011</td>
+                    <td>Lost</td>
+                    <td>Fair</td>
+                    <td>2023-11-07</td>
+                    <td>2026-11-07</td>
+                    <td>Sales</td>
+                    <td>Davao Office</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-CHR-000033</td>
+                    <td>Laptop Charger</td>
+                    <td>Lenovo</td>
+                    <td>65W USB-C</td>
+                    <td>LC-033</td>
+                    <td>Assigned</td>
+                    <td>Good</td>
+                    <td>2025-02-14</td>
+                    <td>2027-02-14</td>
+                    <td>Sales</td>
+                    <td>Davao Office</td>
+                    <td>E008</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-PHN-000033</td>
+                    <td>Mobile Phone</td>
+                    <td>Samsung</td>
+                    <td>Galaxy S24</td>
+                    <td>SG-033</td>
+                    <td>Assigned</td>
+                    <td>Excellent</td>
+                    <td>2025-04-12</td>
+                    <td>2027-04-12</td>
+                    <td>Executive</td>
+                    <td>Manila HQ</td>
+                    <td>E007</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-SCN-000006</td>
+                    <td>Scanner</td>
+                    <td>Canon</td>
+                    <td>imageFORMULA R40</td>
+                    <td>CN-006</td>
+                    <td>Available</td>
+                    <td>Good</td>
+                    <td>2024-03-30</td>
+                    <td>2027-03-30</td>
+                    <td>Human Resources</td>
+                    <td>Warehouse B</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-LAP-000126</td>
+                    <td>Laptop</td>
+                    <td>HP</td>
+                    <td>EliteBook 840 G10</td>
+                    <td>HP-126</td>
+                    <td>Retired</td>
+                    <td>Fair</td>
+                    <td>2022-01-15</td>
+                    <td>2025-01-15</td>
+                    <td>IT Operations</td>
+                    <td>Warehouse A</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-DES-000047</td>
+                    <td>Desktop Computer</td>
+                    <td>Lenovo</td>
+                    <td>ThinkCentre M90q</td>
+                    <td>LT-047</td>
+                    <td>Assigned</td>
+                    <td>Good</td>
+                    <td>2025-01-27</td>
+                    <td>2028-01-27</td>
+                    <td>IT Operations</td>
+                    <td>Davao Office</td>
+                    <td>E006</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-MON-000047</td>
+                    <td>Monitor</td>
+                    <td>Samsung</td>
+                    <td>ViewFinity S6</td>
+                    <td>SA-047</td>
+                    <td>Available</td>
+                    <td>Good</td>
+                    <td>2024-11-22</td>
+                    <td>2027-11-22</td>
+                    <td>Sales</td>
+                    <td>Warehouse A</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-PHN-000034</td>
+                    <td>Mobile Phone</td>
+                    <td>Google</td>
+                    <td>Pixel 9</td>
+                    <td>GO-034</td>
+                    <td>Available</td>
+                    <td>Excellent</td>
+                    <td>2025-03-18</td>
+                    <td>2027-03-18</td>
+                    <td>Marketing</td>
+                    <td>Warehouse B</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-LAP-000127</td>
+                    <td>Laptop</td>
+                    <td>Acer</td>
+                    <td>TravelMate P2</td>
+                    <td>AC-127</td>
+                    <td>Assigned</td>
+                    <td>Good</td>
+                    <td>2025-07-01</td>
+                    <td>2028-07-01</td>
+                    <td>Human Resources</td>
+                    <td>Remote</td>
+                    <td>E011</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-PRN-000012</td>
+                    <td>Printer</td>
+                    <td>Canon</td>
+                    <td>MAXIFY GX6070</td>
+                    <td>CA-012</td>
+                    <td>Available</td>
+                    <td>Good</td>
+                    <td>2025-01-08</td>
+                    <td>2028-01-08</td>
+                    <td>Marketing</td>
+                    <td>Manila HQ</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-CHR-000034</td>
+                    <td>Laptop Charger</td>
+                    <td>Apple</td>
+                    <td>96W USB-C</td>
+                    <td>AP-034</td>
+                    <td>Assigned</td>
+                    <td>Good</td>
+                    <td>2025-06-11</td>
+                    <td>2028-06-11</td>
+                    <td>Marketing</td>
+                    <td>Remote</td>
+                    <td>E010</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-MON-000048</td>
+                    <td>Monitor</td>
+                    <td>BenQ</td>
+                    <td>GW2790Q</td>
+                    <td>BQ-048</td>
+                    <td>Under Repair</td>
+                    <td>Fair</td>
+                    <td>2024-07-04</td>
+                    <td>2027-07-04</td>
+                    <td>IT Operations</td>
+                    <td>Warehouse A</td>
+                    <td></td>
+                    <td>Company-owned equipment</td>
+                </tr>
+                <tr>
+                    <td>IT-DES-000048</td>
+                    <td>Desktop Computer</td>
+                    <td>HP</td>
+                    <td>ProDesk 400 G7</td>
+                    <td>HP-048</td>
+                    <td>Assigned</td>
+                    <td>Good</td>
+                    <td>2024-12-12</td>
+                    <td>2027-12-12</td>
+                    <td>Executive</td>
+                    <td>Manila HQ</td>
+                    <td>E007</td>
+                    <td>Company-owned equipment</td>
+                </tr>
+            </tbody>
+        </table>
+        <table id="seedEmployees">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>email</th>
+                    <th>department</th>
+                    <th>location</th>
+                    <th>role</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>E001</td>
+                    <td>Juan Dela Cruz</td>
+                    <td>juan.delacruz@GEMS.local</td>
+                    <td>IT Operations</td>
+                    <td>Manila HQ</td>
+                    <td>IT Manager</td>
+                </tr>
+                <tr>
+                    <td>E002</td>
+                    <td>Maria Santos</td>
+                    <td>maria.santos@GEMS.local</td>
+                    <td>Finance</td>
+                    <td>Manila HQ</td>
+                    <td>Accountant</td>
+                </tr>
+                <tr>
+                    <td>E003</td>
+                    <td>Pedro Reyes</td>
+                    <td>pedro.reyes@GEMS.local</td>
+                    <td>Sales</td>
+                    <td>Cebu Office</td>
+                    <td>Sales Lead</td>
+                </tr>
+                <tr>
+                    <td>E004</td>
+                    <td>Ana Cruz</td>
+                    <td>ana.cruz@GEMS.local</td>
+                    <td>Marketing</td>
+                    <td>Manila HQ</td>
+                    <td>Marketing Specialist</td>
+                </tr>
+                <tr>
+                    <td>E005</td>
+                    <td>Liza Garcia</td>
+                    <td>liza.garcia@GEMS.local</td>
+                    <td>Human Resources</td>
+                    <td>Manila HQ</td>
+                    <td>HR Business Partner</td>
+                </tr>
+                <tr>
+                    <td>E006</td>
+                    <td>Ramon Lim</td>
+                    <td>ramon.lim@GEMS.local</td>
+                    <td>IT Operations</td>
+                    <td>Davao Office</td>
+                    <td>Systems Engineer</td>
+                </tr>
+                <tr>
+                    <td>E007</td>
+                    <td>Sofia Tan</td>
+                    <td>sofia.tan@GEMS.local</td>
+                    <td>Executive</td>
+                    <td>Manila HQ</td>
+                    <td>Executive Assistant</td>
+                </tr>
+                <tr>
+                    <td>E008</td>
+                    <td>Miguel Torres</td>
+                    <td>miguel.torres@GEMS.local</td>
+                    <td>Sales</td>
+                    <td>Davao Office</td>
+                    <td>Account Executive</td>
+                </tr>
+                <tr>
+                    <td>E009</td>
+                    <td>Carla Mendoza</td>
+                    <td>carla.mendoza@GEMS.local</td>
+                    <td>Finance</td>
+                    <td>Cebu Office</td>
+                    <td>Financial Analyst</td>
+                </tr>
+                <tr>
+                    <td>E010</td>
+                    <td>Nico Villanueva</td>
+                    <td>nico.villanueva@GEMS.local</td>
+                    <td>Marketing</td>
+                    <td>Remote</td>
+                    <td>Designer</td>
+                </tr>
+                <tr>
+                    <td>E011</td>
+                    <td>Bea Navarro</td>
+                    <td>bea.navarro@GEMS.local</td>
+                    <td>Human Resources</td>
+                    <td>Remote</td>
+                    <td>Recruiter</td>
+                </tr>
+            </tbody>
+        </table>
+        <table id="seedAssignments">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>assetTag</th>
+                    <th>employeeId</th>
+                    <th>startDate</th>
+                    <th>endDate</th>
+                    <th>returnedBy</th>
+                    <th>returnedCondition</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>AS001</td>
+                    <td>IT-LAP-000123</td>
+                    <td>E002</td>
+                    <td>2025-01-15</td>
+                    <td>2025-03-09</td>
+                    <td>Juan Dela Cruz</td>
+                    <td>Good</td>
+                </tr>
+                <tr>
+                    <td>AS002</td>
+                    <td>IT-LAP-000123</td>
+                    <td>E003</td>
+                    <td>2025-06-05</td>
+                    <td>2026-01-14</td>
+                    <td>IT Admin</td>
+                    <td>Good</td>
+                </tr>
+                <tr>
+                    <td>AS003</td>
+                    <td>IT-LAP-000123</td>
+                    <td>E001</td>
+                    <td>2026-01-15</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AS004</td>
+                    <td>IT-LAP-000124</td>
+                    <td>E004</td>
+                    <td>2025-07-01</td>
+                    <td>2026-01-05</td>
+                    <td>IT Admin</td>
+                    <td>Good</td>
+                </tr>
+                <tr>
+                    <td>AS005</td>
+                    <td>IT-LAP-000124</td>
+                    <td>E008</td>
+                    <td>2026-01-06</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AS006</td>
+                    <td>IT-MON-000045</td>
+                    <td>E004</td>
+                    <td>2025-02-01</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AS007</td>
+                    <td>IT-PHN-000032</td>
+                    <td>E003</td>
+                    <td>2025-04-10</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AS008</td>
+                    <td>IT-DES-000046</td>
+                    <td>E009</td>
+                    <td>2025-01-02</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AS009</td>
+                    <td>IT-DES-000047</td>
+                    <td>E006</td>
+                    <td>2025-02-03</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AS010</td>
+                    <td>IT-PHN-000033</td>
+                    <td>E007</td>
+                    <td>2025-04-13</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AS011</td>
+                    <td>IT-LAP-000127</td>
+                    <td>E011</td>
+                    <td>2025-07-03</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AS012</td>
+                    <td>IT-CHR-000033</td>
+                    <td>E008</td>
+                    <td>2025-06-01</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AS013</td>
+                    <td>IT-SCN-000005</td>
+                    <td>E005</td>
+                    <td>2025-03-04</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AS014</td>
+                    <td>IT-MON-000046</td>
+                    <td>E009</td>
+                    <td>2025-01-10</td>
+                    <td>2025-04-01</td>
+                    <td>IT Admin</td>
+                    <td>Good</td>
+                </tr>
+                <tr>
+                    <td>AS015</td>
+                    <td>IT-MON-000046</td>
+                    <td>E002</td>
+                    <td>2025-04-02</td>
+                    <td>2026-01-20</td>
+                    <td>IT Admin</td>
+                    <td>Good</td>
+                </tr>
+                <tr>
+                    <td>AS016</td>
+                    <td>IT-MON-000047</td>
+                    <td>E003</td>
+                    <td>2025-01-10</td>
+                    <td>2025-02-10</td>
+                    <td>IT Admin</td>
+                    <td>Fair</td>
+                </tr>
+                <tr>
+                    <td>AS017</td>
+                    <td>IT-PRN-000010</td>
+                    <td>E005</td>
+                    <td>2025-05-01</td>
+                    <td>2025-06-01</td>
+                    <td>IT Admin</td>
+                    <td>Good</td>
+                </tr>
+                <tr>
+                    <td>AS018</td>
+                    <td>IT-DES-000045</td>
+                    <td>E002</td>
+                    <td>2024-09-01</td>
+                    <td>2025-10-01</td>
+                    <td>IT Admin</td>
+                    <td>Fair</td>
+                </tr>
+                <tr>
+                    <td>AS019</td>
+                    <td>IT-LAP-000125</td>
+                    <td>E010</td>
+                    <td>2025-06-15</td>
+                    <td>2026-02-01</td>
+                    <td>IT Admin</td>
+                    <td>Excellent</td>
+                </tr>
+                <tr>
+                    <td>AS020</td>
+                    <td>IT-CHR-000034</td>
+                    <td>E010</td>
+                    <td>2025-06-15</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <table id="seedAuditLogs">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>action</th>
+                    <th>description</th>
+                    <th>user</th>
+                    <th>date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LOG001</td>
+                    <td>Asset assigned</td>
+                    <td>IT-LAP-000123 assigned to Juan Dela Cruz</td>
+                    <td>System Admin</td>
+                    <td>2026-09-10T08:14:00Z</td>
+                </tr>
+                <tr>
+                    <td>LOG002</td>
+                    <td>Asset returned</td>
+                    <td>IT-MON-000046 returned to inventory</td>
+                    <td>System Admin</td>
+                    <td>2026-09-09T16:40:00Z</td>
+                </tr>
+                <tr>
+                    <td>LOG003</td>
+                    <td>Asset added</td>
+                    <td>IT-PRN-000012 added to inventory</td>
+                    <td>System Admin</td>
+                    <td>2026-09-08T11:30:00Z</td>
+                </tr>
+                <tr>
+                    <td>LOG004</td>
+                    <td>Asset transferred</td>
+                    <td>IT-LAP-000124 transferred to Miguel Torres</td>
+                    <td>System Admin</td>
+                    <td>2026-09-07T10:21:00Z</td>
+                </tr>
+                <tr>
+                    <td>LOG005</td>
+                    <td>Asset status changed</td>
+                    <td>IT-DES-000045 marked Under Repair</td>
+                    <td>System Admin</td>
+                    <td>2026-09-06T09:15:00Z</td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="seedTypes"><span>Laptop</span><span>Laptop Charger</span><span>Desktop
+                Computer</span><span>Printer</span><span>Scanner</span><span>Monitor</span><span>Mobile Phone</span>
+        </div>
+        <div id="seedStatuses"><span>Assigned</span><span>Available</span><span>Under
+                Repair</span><span>Lost</span><span>Retired</span></div>
+        <div id="seedDepartments"><span>IT Operations</span><span>Finance</span><span>Human
+                Resources</span><span>Marketing</span><span>Sales</span><span>Executive</span></div>
+        <div id="seedLocations"><span>Manila HQ</span><span>Cebu Office</span><span>Davao
+                Office</span><span>Remote</span><span>Warehouse A</span><span>Warehouse B</span></div>
+    </div>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/data.js' %}?v=2"></script>
+<script src="{% static 'js/app.js' %}?v=2"></script>
+</body>
+
+</html>

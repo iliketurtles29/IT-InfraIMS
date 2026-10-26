@@ -1,0 +1,910 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}GEMS IT{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/bootstrap.min.css' %}">
+
+    <link rel="stylesheet"
+          href="{% static 'css/bootstrap-icons.css' %}">
+
+          <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <link rel="stylesheet"
+          href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <div class="app-shell">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">G</div>
+
+                <div>
+                    <h1>GEMS IT</h1>
+                    <small>Inventory & Asset Management System</small>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                Inventory views
+            </div>
+
+            <div class="subnav">
+                <a class="nav-link"
+                   href="{% url 'assets' %}?type=Laptop">
+                    <i class="bi bi-laptop"></i>
+                    Laptops
+                </a>
+
+                <a class="nav-link"
+                   href="{% url 'assets' %}?type=Laptop%20Charger">
+                    <i class="bi bi-plug"></i>
+                    Laptop Chargers
+                </a>
+
+                <a class="nav-link"
+                   href="{% url 'assets' %}?type=Desktop%20Computer">
+                    <i class="bi bi-pc-display"></i>
+                    Desktop Computers
+                </a>
+
+                <a class="nav-link"
+                   href="{% url 'assets' %}?type=Printer">
+                    <i class="bi bi-printer"></i>
+                    Printers
+                </a>
+
+                <a class="nav-link"
+                   href="{% url 'assets' %}?type=Scanner">
+                    <i class="bi bi-upc-scan"></i>
+                    Scanners
+                </a>
+
+                <a class="nav-link"
+                   href="{% url 'assets' %}?type=Monitor">
+                    <i class="bi bi-display"></i>
+                    Monitors
+                </a>
+
+                <a class="nav-link"
+                   href="{% url 'assets' %}?type=Mobile%20Phone">
+                    <i class="bi bi-phone"></i>
+                    Mobile Phones
+                </a>
+            </div>
+
+            <div class="nav-section">
+                Workspace
+            </div>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}"
+               href="{% url 'index' %}">
+                <i class="bi bi-grid-1x2"></i>
+                Dashboard
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'assets' %}active{% endif %}"
+               href="{% url 'assets' %}">
+                <i class="bi bi-boxes"></i>
+                All Assets
+            </a>
+
+            <a class="nav-link" href="{% url 'quality-inspection' %}">
+                <i class="bi bi-clipboard2-pulse"></i>
+                Computer Quality Inspection
+            </a>
+            
+            <a class="nav-link" href="{% url 'quality-inspections' %}">
+                <i class="bi bi-clipboard2-check"></i>
+                Quality Inspections
+            </a>
+
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'employees' %}active{% endif %}"
+               href="{% url 'employees' %}">
+                <i class="bi bi-people"></i>
+                Employees
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}"
+               href="{% url 'reports' %}">
+                <i class="bi bi-bar-chart-line"></i>
+                Reports
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'audit-logs' %}active{% endif %}"
+               href="{% url 'audit-logs' %}">
+                <i class="bi bi-clock-history"></i>
+                Audit Logs
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}"
+               href="{% url 'settings' %}">
+                <i class="bi bi-gear"></i>
+                Settings
+            </a>
+        </aside>
+
+        <main class="main">
+
+            <header class="topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button
+                        class="btn btn-light mobile-menu"
+                        type="button"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#mobileNav">
+                        <i class="bi bi-list"></i>
+                    </button>
+
+                    <span class="eyebrow">
+                        Operations /
+                        {% block breadcrumb %}
+                            {{ request.resolver_match.url_name|default:"index" }}
+                        {% endblock %}
+                    </span>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <button
+                        class="btn btn-light"
+                        type="button"
+                        onclick="showToast('All systems operational')">
+                        <i class="bi bi-bell"></i>
+                    </button>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="avatar">SA</span>
+
+                        <div class="d-none d-sm-block">
+                            <b class="small">System Admin</b>
+                            <div class="muted" style="font-size:11px">
+                                Administrator
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="offcanvas offcanvas-start"
+                 tabindex="-1"
+                 id="mobileNav">
+
+                <div class="offcanvas-header">
+                    <b>GEMS IT</b>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="offcanvas">
+                    </button>
+                </div>
+
+                <div class="offcanvas-body">
+                    <div class="nav-section">
+                        Inventory views
+                    </div>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'assets' %}?type=Laptop">
+                        <i class="bi bi-laptop me-2"></i>
+                        Laptops
+                    </a>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'assets' %}?type=Laptop%20Charger">
+                        <i class="bi bi-plug me-2"></i>
+                        Laptop Chargers
+                    </a>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'assets' %}?type=Desktop%20Computer">
+                        <i class="bi bi-pc-display me-2"></i>
+                        Desktop Computers
+                    </a>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'assets' %}?type=Printer">
+                        <i class="bi bi-printer me-2"></i>
+                        Printers
+                    </a>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'assets' %}?type=Scanner">
+                        <i class="bi bi-upc-scan me-2"></i>
+                        Scanners
+                    </a>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'assets' %}?type=Monitor">
+                        <i class="bi bi-display me-2"></i>
+                        Monitors
+                    </a>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'assets' %}?type=Mobile%20Phone">
+                        <i class="bi bi-phone me-2"></i>
+                        Mobile Phones
+                    </a>
+
+                    <div class="nav-section mt-3">
+                        Workspace
+                    </div>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'index' %}">
+                        <i class="bi bi-grid-1x2 me-2"></i>
+                        Dashboard
+                    </a>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'assets' %}">
+                        <i class="bi bi-boxes me-2"></i>
+                        All Assets
+                    </a>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'employees' %}">
+                        <i class="bi bi-people me-2"></i>
+                        Employees
+                    </a>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'reports' %}">
+                        <i class="bi bi-bar-chart-line me-2"></i>
+                        Reports
+                    </a>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'audit-logs' %}">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Audit Logs
+                    </a>
+
+                    <a class="nav-link mb-2"
+                       href="{% url 'settings' %}">
+                        <i class="bi bi-gear me-2"></i>
+                        Settings
+                    </a>
+                </div>
+            </div>
+
+<div class="page-wrap">
+
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <div class="eyebrow">Good morning, Admin</div>
+            <h2 class="page-title">Dashboard</h2>
+            <p class="muted mb-0">
+                A real-time view of your IT estate.
+            </p>
+        </div>
+
+    <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#addAssetModal">
+        <i class="bi bi-plus-lg me-2"></i>
+        Add asset
+    </a>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-6 col-xl-2">
+            <div class="card stat-card">
+                <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                    <i class="bi bi-boxes"></i>
+                </div>
+                <div class="stat-value">{{ total_assets }}</div>
+                <div class="stat-label">Total assets</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-xl-2">
+            <div class="card stat-card">
+                <div class="stat-icon bg-success bg-opacity-10 text-success">
+                    <i class="bi bi-person-check"></i>
+                </div>
+                <div class="stat-value" >{{ assigned_assets }}</div>
+                <div class="stat-label">Assigned</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-xl-2">
+            <div class="card stat-card">
+                <div class="stat-icon bg-info bg-opacity-10 text-info">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-value" >{{ available_assets }}</div>
+                <div class="stat-label">Available</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-xl-2">
+            <div class="card stat-card">
+                <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <div class="stat-value" >{{ repair_assets }}</div>
+                <div class="stat-label">Under repair</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-xl-2">
+            <div class="card stat-card">
+                <div class="stat-icon bg-danger bg-opacity-10 text-danger">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div class="stat-value">{{ lost_assets }}</div>
+                <div class="stat-label">Lost</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-xl-2">
+            <div class="card stat-card">
+                <div class="stat-icon bg-secondary bg-opacity-10 text-secondary">
+                    <i class="bi bi-archive"></i>
+                </div>
+                <div class="stat-value">{{ retired_assets }}</div>
+                <div class="stat-label">Retired</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Graphs and recent activity -->
+    <div class="row g-3">
+
+        <div class="col-xl-8">
+            <div class="card p-4 h-100">
+
+                <div class="d-flex justify-content-between mb-3">
+                    <div>
+                        <h5 class="mb-1">Asset distribution</h5>
+                        <span class="muted small">
+                            Current inventory by category
+                        </span>
+                    </div>
+
+                    <a href="{% url 'assets' %}" class="small">
+                        View inventory
+                        <i class="bi bi-arrow-up-right"></i>
+                    </a>
+                </div>
+
+                <div class="row">
+
+                    <!-- Assets by type -->
+                    <div class="col-md-4">
+                        <div class="muted small fw-bold mb-3">
+                            Assets by type
+                        </div>
+
+                        {% for item in asset_types %}
+                            <div class="chart-row">
+                                <span class="label">{{ item.name }}</span>
+
+                                <div class="bar">
+                                    {% widthratio item.asset_count total_assets 100 as type_width %}
+                                    <span style="width:{{ type_width }}%"></span>
+                                </div>
+
+                                <b>{{ item.asset_count }}</b>
+                            </div>
+                        {% empty %}
+                            <div class="muted small">
+                                No asset types found.
+                            </div>
+                        {% endfor %}
+                    </div>
+
+
+                    <!-- Assets by department -->
+                    <div class="col-md-4">
+                        <div class="muted small fw-bold mb-3">
+                            Assets by department
+                        </div>
+
+                        {% for item in departments %}
+                            <div class="chart-row">
+                                <span class="label">{{ item.name }}</span>
+
+                                <div class="bar">
+                                    {% widthratio item.asset_count total_assets 100 as department_width %}
+                                    <span style="width:{{ department_width }}%"></span>
+                                </div>
+
+                                <b>{{ item.asset_count }}</b>
+                            </div>
+                        {% empty %}
+                            <div class="muted small">
+                                No departments found.
+                            </div>
+                        {% endfor %}
+                    </div>
+
+
+                    <!-- Assets by location -->
+                    <div class="col-md-4">
+                        <div class="muted small fw-bold mb-3">
+                            Assets by location
+                        </div>
+
+                        {% for item in locations %}
+                            <div class="chart-row">
+                                <span class="label">{{ item.name }}</span>
+
+                                <div class="bar">
+                                    {% widthratio item.asset_count total_assets 100 as location_width %}
+                                    <span style="width:{{ location_width }}%"></span>
+                                </div>
+
+                                <b>{{ item.asset_count }}</b>
+                            </div>
+                        {% empty %}
+                            <div class="muted small">
+                                No locations found.
+                            </div>
+                        {% endfor %}
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent activity -->
+       <div class="col-xl-4">
+            <div class="card p-4 h-100">
+
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="mb-1">Recent activity</h5>
+
+                    <a href="{% url 'audit-logs' %}" class="small">
+                        See all
+                    </a>
+                </div>
+
+                {% for log in recent_logs|slice:":3" %}
+                    <div class="activity-item">
+                        <b class="small">
+                            {% if log.action == "create" %}
+                                Added asset
+                            {% elif log.action == "update" %}
+                                Edited asset
+                            {% elif log.action == "assign" %}
+                                Transferred asset
+                            {% elif log.action == "return" %}
+                                Returned asset
+                            {% elif log.action == "retire" %}
+                                Retired asset
+                            {% elif log.action == "delete" %}
+                                Deleted asset
+                            {% else %}
+                                {{ log.get_action_display }}
+                            {% endif %}
+                        </b>
+
+                        <div class="small muted">
+                            {{ log.description }}
+                        </div>
+
+                        <div class="small muted mt-1">
+                            {{ log.created_at|date:"M d, Y h:i A" }}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="empty">
+                        No activity recorded yet.
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+        </main>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="appToast" class="toast">
+            <div class="toast-header">
+                <span class="avatar me-2">G</span>
+                <strong class="me-auto">GEMS IT</strong>
+                <small>now</small>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="toast">
+                </button>
+            </div>
+
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <!-- Shared editable HTML data source -->
+    <div id="inventoryData"
+         hidden
+         aria-hidden="true">
+
+        <table id="seedAssets">
+            <thead>
+                <tr>
+                    <th>tag</th>
+                    <th>type</th>
+                    <th>brand</th>
+                    <th>model</th>
+                    <th>serial</th>
+                    <th>status</th>
+                    <th>condition</th>
+                    <th>purchaseDate</th>
+                    <th>warranty</th>
+                    <th>department</th>
+                    <th>location</th>
+                    <th>employeeId</th>
+                    <th>notes</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for asset in seed_assets %}
+                <tr>
+                    <td>{{ asset.tag }}</td>
+                    <td>{{ asset.type }}</td>
+                    <td>{{ asset.brand }}</td>
+                    <td>{{ asset.model }}</td>
+                    <td>{{ asset.serial }}</td>
+                    <td>{{ asset.status }}</td>
+                    <td>{{ asset.condition }}</td>
+                    <td>{{ asset.purchaseDate }}</td>
+                    <td>{{ asset.warranty }}</td>
+                    <td>{{ asset.department }}</td>
+                    <td>{{ asset.location }}</td>
+                    <td>{{ asset.employeeId }}</td>
+                    <td>{{ asset.notes }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table id="seedEmployees">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>email</th>
+                    <th>department</th>
+                    <th>location</th>
+                    <th>role</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for employee in seed_employees %}
+                <tr>
+                    <td>{{ employee.id }}</td>
+                    <td>{{ employee.name }}</td>
+                    <td>{{ employee.email }}</td>
+                    <td>{{ employee.department }}</td>
+                    <td>{{ employee.location }}</td>
+                    <td>{{ employee.role }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table id="seedAssignments">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>assetTag</th>
+                    <th>employeeId</th>
+                    <th>startDate</th>
+                    <th>endDate</th>
+                    <th>returnedBy</th>
+                    <th>returnedCondition</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for assignment in seed_assignments %}
+                <tr>
+                    <td>{{ assignment.id }}</td>
+                    <td>{{ assignment.assetTag }}</td>
+                    <td>{{ assignment.employeeId }}</td>
+                    <td>{{ assignment.startDate }}</td>
+                    <td>{{ assignment.endDate }}</td>
+                    <td>{{ assignment.returnedBy }}</td>
+                    <td>{{ assignment.returnedCondition }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table id="seedAuditLogs">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>action</th>
+                    <th>description</th>
+                    <th>user</th>
+                    <th>date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for log in seed_audit_logs %}
+                <tr>
+                    <td>{{ log.id }}</td>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.description }}</td>
+                    <td>{{ log.user }}</td>
+                    <td>{{ log.date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div id="seedTypes">
+            {% for item in seed_types %}
+                <span>{{ item }}</span>
+            {% endfor %}
+        </div>
+
+        <div id="seedStatuses">
+            {% for item in seed_statuses %}
+                <span>{{ item }}</span>
+            {% endfor %}
+        </div>
+
+        <div id="seedDepartments">
+            {% for item in seed_departments %}
+                <span>{{ item }}</span>
+            {% endfor %}
+        </div>
+
+        <div id="seedLocations">
+            {% for item in seed_locations %}
+                <span>{{ item }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    <style>
+    /* Styling is intentionally scoped to this modal only. */
+    #addAssetModal .asset-create-dialog {
+        max-width: 820px;
+        height: calc(100% - var(--bs-modal-margin) * 2);
+        max-height: calc(100vh - 1rem);
+    }
+    #addAssetModal .asset-create-content {
+        display: flex;
+        max-height: 100%;
+        overflow: hidden;
+        border: 0;
+        border-radius: 20px;
+        box-shadow: 0 28px 80px rgba(15, 35, 60, .24);
+    }
+    #addAssetModal .asset-create-content > form {
+        display: flex;
+        min-height: 0;
+        flex: 1 1 auto;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    #addAssetModal .asset-create-header,
+    #addAssetModal .modal-footer { flex: 0 0 auto; }
+    #addAssetModal .modal-body {
+        min-height: 0;
+        flex: 1 1 auto;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+    #addAssetModal .asset-create-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.45rem 1.6rem;
+        color: #fff;
+        border: 0;
+        background: linear-gradient(135deg, #123b68 0%, #2568a6 100%);
+    }
+    #addAssetModal .asset-create-heading { display: flex; align-items: center; gap: .9rem; }
+    #addAssetModal .asset-create-icon {
+        display: grid;
+        flex: 0 0 48px;
+        width: 48px;
+        height: 48px;
+        place-items: center;
+        border: 1px solid rgba(255,255,255,.23);
+        border-radius: 15px;
+        color: #fff;
+        background: rgba(255,255,255,.14);
+        font-size: 1.3rem;
+    }
+    #addAssetModal .asset-create-eyebrow {
+        margin-bottom: .25rem;
+        color: rgba(255,255,255,.72);
+        font-size: .66rem;
+        font-weight: 750;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+    }
+    #addAssetModal .modal-title { color: #fff; font-size: 1.25rem; font-weight: 750; letter-spacing: -.02em; }
+    #addAssetModal .asset-create-subtitle { margin: .28rem 0 0; color: rgba(255,255,255,.78); font-size: .86rem; }
+    #addAssetModal .modal-body { padding: 1.4rem 1.6rem; background: #f7f9fc; }
+    #addAssetModal .asset-form-section {
+        padding: 1.15rem;
+        border: 1px solid #e6ebf2;
+        border-radius: 15px;
+        background: #fff;
+    }
+    #addAssetModal .asset-form-section + .asset-form-section { margin-top: 1rem; }
+    #addAssetModal .asset-form-section-title {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        margin: 0 0 1rem;
+        color: #25364c;
+        font-size: .91rem;
+        font-weight: 720;
+    }
+    #addAssetModal .asset-form-section-title i { color: #347db7; }
+    #addAssetModal .form-label { margin-bottom: .42rem; color: #3a4b61; font-size: .8rem; font-weight: 650; }
+    #addAssetModal .form-control,
+    #addAssetModal .form-select {
+        min-height: 43px;
+        border: 1px solid #dce4ee;
+        border-radius: 10px;
+        color: #1c2d43;
+        background-color: #fff;
+        box-shadow: none;
+        transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    #addAssetModal .form-control::placeholder { color: #a0acba; }
+    #addAssetModal .form-control:focus,
+    #addAssetModal .form-select:focus {
+        border-color: #6ba6d8;
+        box-shadow: 0 0 0 3px rgba(48,125,187,.13);
+    }
+    #addAssetModal .modal-footer {
+        gap: .55rem;
+        padding: 1rem 1.6rem 1.35rem;
+        border-top: 1px solid #edf0f4;
+        background: #fff;
+    }
+    #addAssetModal .modal-footer .btn { min-height: 42px; padding: .55rem 1rem; border-radius: 10px; font-weight: 650; }
+    #addAssetModal .modal-footer .btn-primary { box-shadow: 0 5px 14px rgba(36,104,170,.17); }
+    @media (max-width: 575.98px) {
+        #addAssetModal .modal-body { padding: 1rem; }
+        #addAssetModal .asset-create-header { padding: 1.1rem; }
+        #addAssetModal .modal-footer { padding: .9rem 1rem 1.1rem; }
+        #addAssetModal .asset-form-section { padding: .9rem; }
+    }
+</style>
+
+<div class="modal fade" id="addAssetModal" tabindex="-1" aria-labelledby="addAssetModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable asset-create-dialog">
+        <div class="modal-content asset-create-content">
+            <form method="post" action="{% url 'asset-create' %}">
+                {% csrf_token %}
+                <div class="modal-header asset-create-header">
+                    <div class="asset-create-heading">
+                        <span class="asset-create-icon"><i class="bi bi-box-seam"></i></span>
+                        <div>
+                            <div class="asset-create-eyebrow">Inventory control</div>
+                            <h5 class="modal-title" id="addAssetModalTitle">Add asset</h5>
+                            <p class="asset-create-subtitle">Register a device and keep its information organized.</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <section class="asset-form-section">
+                        <h6 class="asset-form-section-title"><i class="bi bi-info-circle"></i>Asset details</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="modalAssetTag" class="form-label">Asset Tag <span class="text-danger">*</span></label>
+                                <input id="modalAssetTag" name="asset_tag" class="form-control" placeholder="e.g. IT-LAP-1024" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="modalAssetType" class="form-label">Asset Type <span class="text-danger">*</span></label>
+                                <select id="modalAssetType" name="asset_type" class="form-select" required>
+                                    <option value="">Select an asset type</option>
+                                    {% for asset_type in asset_types %}
+                                        <option value="{{ asset_type.name }}">{{ asset_type.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalBrand" class="form-label">Brand</label>
+                                <input id="modalBrand" name="brand" class="form-control" placeholder="e.g. Dell">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalModel" class="form-label">Model</label>
+                                <input id="modalModel" name="model" class="form-control" placeholder="e.g. Latitude 5440">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalSerial" class="form-label">Serial Number</label>
+                                <input id="modalSerial" name="serial_number" class="form-control" placeholder="Enter serial number">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalCondition" class="form-label">Condition</label>
+                                <select id="modalCondition" name="condition" class="form-select">
+                                    <option value="new" selected>New</option>
+                                    <option value="good">Good</option>
+                                    <option value="fair">Fair</option>
+                                    <option value="damaged">Damaged</option>
+                                    <option value="for_disposal">For Disposal</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="asset-form-section">
+                        <h6 class="asset-form-section-title"><i class="bi bi-geo-alt"></i>Purchase &amp; assignment details</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="modalPurchaseDate" class="form-label">Purchase Date</label>
+                                <input id="modalPurchaseDate" name="purchase_date" type="date" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="modalWarranty" class="form-label">Warranty Expiration</label>
+                                <input id="modalWarranty" name="warranty_expiration" type="date" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="modalDepartment" class="form-label">Department <span class="text-danger">*</span></label>
+                                <select id="modalDepartment" name="department" class="form-select" required>
+                                    <option value="">Select a department</option>
+                                    {% for department in departments %}
+                                        <option value="{{ department.name }}">{{ department.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="modalLocation" class="form-label">Location <span class="text-danger">*</span></label>
+                                <select id="modalLocation" name="location" class="form-select" required>
+                                    <option value="">Select a location</option>
+                                    {% for location in locations %}
+                                        <option value="{{ location.name }}">{{ location.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-2"></i>Create asset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/data.js' %}?v=6"></script>
+    <script src="{% static 'js/app.js' %}?v=6"></script>
+
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>

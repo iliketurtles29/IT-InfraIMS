@@ -1,0 +1,224 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}GEMS IT{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <div class="app-shell">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">G</div>
+                <div>
+                    <h1>GEMS IT</h1>
+                    <small>Inventory & Asset Management System</small>
+                </div>
+            </div>
+
+            <div class="nav-section">Inventory views</div>
+
+            <div class="subnav">
+                <a class="nav-link" href="{% url 'assets' %}?type=Laptop">
+                    <i class="bi bi-laptop"></i>
+                    Laptops
+                </a>
+
+                <a class="nav-link" href="{% url 'assets' %}?type=Charger">
+                    <i class="bi bi-plug"></i>
+                    Laptop Chargers
+                </a>
+
+                <a class="nav-link" href="{% url 'assets' %}?type=Desktop">
+                    <i class="bi bi-pc-display"></i>
+                    Desktop Computers
+                </a>
+
+                <a class="nav-link" href="{% url 'assets' %}?type=Printer">
+                    <i class="bi bi-printer"></i>
+                    Printers
+                </a>
+
+                <a class="nav-link" href="{% url 'assets' %}?type=Scanner">
+                    <i class="bi bi-upc-scan"></i>
+                    Scanners
+                </a>
+
+                <a class="nav-link" href="{% url 'assets' %}?type=Monitor">
+                    <i class="bi bi-display"></i>
+                    Monitors
+                </a>
+
+                <a class="nav-link" href="{% url 'assets' %}?type=Phone">
+                    <i class="bi bi-phone"></i>
+                    Mobile Phones
+                </a>
+            </div>
+
+            <div class="nav-section">Workspace</div>
+
+            <a class="nav-link" href="{% url 'index' %}">
+                <i class="bi bi-grid-1x2"></i>
+                Dashboard
+            </a>
+
+            <a class="nav-link" href="{% url 'assets' %}">
+                <i class="bi bi-boxes"></i>
+                All Assets
+            </a>
+
+            <a class="nav-link" href="{% url 'quality-inspection' %}">
+                <i class="bi bi-clipboard2-pulse"></i>
+                Computer Quality Inspection
+            </a>
+            <a class="nav-link" href="{% url 'consumables' %}">
+    <i class="bi bi-box-seam"></i>
+    Consumables
+</a>
+
+            <a class="nav-link" href="{% url 'quality-inspections' %}">
+                <i class="bi bi-clipboard2-check"></i>
+                Quality Inspections
+            </a>
+
+            <a class="nav-link" href="{% url 'employees' %}">
+                <i class="bi bi-people"></i>
+                Employees
+            </a>
+
+            <a class="nav-link" href="{% url 'reports' %}">
+                <i class="bi bi-bar-chart-line"></i>
+                Reports
+            </a>
+
+            <a class="nav-link" href="{% url 'audit-logs' %}">
+                <i class="bi bi-clock-history"></i>
+                Audit Logs
+            </a>
+
+            <a class="nav-link" href="{% url 'settings' %}">
+                <i class="bi bi-gear"></i>
+                Settings
+            </a>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button
+                        class="btn btn-light mobile-menu"
+                        type="button"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#mobileNav">
+                        <i class="bi bi-list"></i>
+                    </button>
+
+                    <span class="eyebrow">
+                        Operations /
+                        {% block breadcrumb %}Dashboard{% endblock %}
+                    </span>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <button
+                        class="btn btn-light"
+                        type="button"
+                        onclick="showToast('All systems operational')">
+                        <i class="bi bi-bell"></i>
+                    </button>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="avatar">SA</span>
+
+                        <div class="d-none d-sm-block">
+                            <b class="small">System Admin</b>
+                            <div class="muted" style="font-size:11px">
+                                Administrator
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileNav">
+                <div class="offcanvas-header">
+                    <b>GEMS IT</b>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="offcanvas">
+                    </button>
+                </div>
+
+                <div class="offcanvas-body">
+                    <a class="nav-link mb-2" href="{% url 'index' %}">
+                        <i class="bi bi-grid-1x2 me-2"></i>
+                        Dashboard
+                    </a>
+
+                    <a class="nav-link mb-2" href="{% url 'assets' %}">
+                        <i class="bi bi-boxes me-2"></i>
+                        All Assets
+                    </a>
+
+                    <a class="nav-link mb-2" href="{% url 'employees' %}">
+                        <i class="bi bi-people me-2"></i>
+                        Employees
+                    </a>
+
+                    <a class="nav-link mb-2" href="{% url 'reports' %}">
+                        <i class="bi bi-bar-chart-line me-2"></i>
+                        Reports
+                    </a>
+
+                    <a class="nav-link mb-2" href="{% url 'audit-logs' %}">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Audit Logs
+                    </a>
+
+                    <a class="nav-link mb-2" href="{% url 'settings' %}">
+                        <i class="bi bi-gear me-2"></i>
+                        Settings
+                    </a>
+                </div>
+            </div>
+
+            <div class="page-wrap">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="appToast" class="toast">
+            <div class="toast-header">
+                <span class="avatar me-2">G</span>
+                <strong class="me-auto">GEMS IT</strong>
+                <small>now</small>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="toast">
+                </button>
+            </div>
+
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/data.js' %}?v=6"></script>
+    <script src="{% static 'js/app.js' %}?v=6"></script>
+</body>
+</html>

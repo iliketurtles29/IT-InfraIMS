@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}{{ asset.asset_tag }} · Asset Details{% endblock %}
+{% block breadcrumb %}Inventory · {{ asset.asset_tag }}{% endblock %}
+
+{% block content %}
+<style>
+    .asset-page { color:#172337; }
+    .asset-hero { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:1.25rem; }
+    .asset-hero h2 { margin:.2rem 0 .3rem; letter-spacing:-.04em; }
+    .asset-actions { display:flex; gap:.55rem; flex-wrap:wrap; }
+    .asset-actions .btn { min-height:42px; border-radius:11px; font-weight:700; }
+    .asset-summary { display:grid; grid-template-columns:repeat(4,1fr); gap:.75rem; margin-bottom:1rem; }
+    .summary-card { padding:1rem; border:1px solid #dce7f1; border-radius:16px; background:#fff; box-shadow:0 10px 25px rgba(18,59,104,.05); }
+    .summary-card small { display:block; color:#7b8b9b; font-size:.67rem; font-weight:850; letter-spacing:.07em; text-transform:uppercase; }
+    .summary-card strong { display:block; margin-top:.35rem; color:#23445f; font-size:1rem; }
+    .asset-information-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+    .information-card { overflow:hidden; border:1px solid #dce7f1; border-radius:18px; background:#fff; box-shadow:0 10px 25px rgba(18,59,104,.05); }
+    .information-header { display:flex; align-items:center; padding:1rem 1.2rem; border-bottom:1px solid #e5edf4; background:#f7fbff; }
+    .information-header { justify-content:space-between; gap:.75rem; }
+    .information-title { display:flex; align-items:center; gap:.6rem; color:#21425f; font-weight:800; }
+    .information-title i { color:#238c8a; font-size:1.1rem; }
+    .information-body { padding:1rem 1.2rem; }
+    .holder-count { display:grid; min-width:25px; height:25px; padding:0 .4rem; place-items:center; border-radius:999px; color:#2b7777; background:#e6f4f3; font-size:.72rem; font-weight:850; }
+    .holders-list { display:grid; gap:1rem; }
+    .holder-block { padding-bottom:.8rem; border-bottom:1px solid #e3edf3; }
+    .holder-block:last-child { padding-bottom:0; border-bottom:0; }
+    .information-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.55rem 0; border-bottom:1px solid #edf2f6; }
+    .information-row:last-child { border-bottom:0; }
+    .information-row span { color:#7b8b9b; font-size:.75rem; }
+    .information-row strong { color:#2c4860; font-size:.8rem; text-align:right; }
+    .holder-profile { display:flex; align-items:center; gap:.7rem; padding:.15rem 0 1rem; margin-bottom:.25rem; border-bottom:1px solid #edf2f6; }
+    .holder-avatar { display:grid; width:40px; height:40px; place-items:center; border-radius:13px; color:#fff; background:linear-gradient(135deg,#238c8a,#5b5bd6); font-weight:850; }
+    .holder-profile strong, .holder-profile small { display:block; }
+    .holder-profile strong { color:#2c4860; font-size:.9rem; }
+    .holder-profile small { margin-top:.15rem; color:#8494a2; font-size:.72rem; }
+    .holder-empty { display:flex; flex-direction:column; align-items:center; gap:.35rem; padding:1.4rem .5rem; color:#7b8b9b; text-align:center; }
+    .holder-empty i { color:#9aabb9; font-size:1.8rem; }
+    .holder-empty strong { color:#526a7c; font-size:.85rem; }
+    .holder-empty span { font-size:.75rem; }
+    .activity-card { overflow:hidden; border:1px solid #dce7f1; border-radius:18px; background:#fff; box-shadow:0 12px 32px rgba(18,59,104,.06); }
+    .activity-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 1.2rem; border-bottom:1px solid #e5edf4; background:linear-gradient(120deg,#f7fbff,#f0faf8); }
+    .activity-title { display:flex; align-items:center; gap:.65rem; color:#21425f; font-weight:800; }
+    .activity-title i { display:grid; width:32px; height:32px; place-items:center; border-radius:10px; color:#fff; background:linear-gradient(135deg,#238c8a,#5b5bd6); }
+    .activity-count { padding:.3rem .6rem; border-radius:999px; color:#477086; background:#eaf5f6; font-size:.72rem; font-weight:800; }
+    .activity-body { padding:1.2rem 1.25rem 1.4rem; }
+    .timeline { position:relative; display:grid; gap:.9rem; }
+    .timeline::before { content:""; position:absolute; top:10px; bottom:10px; left:16px; width:2px; background:#e4edf3; }
+    .timeline-item { position:relative; display:grid; grid-template-columns:34px 1fr auto; gap:.8rem; align-items:start; }
+    .timeline-icon { position:relative; z-index:1; display:grid; width:34px; height:34px; place-items:center; border:4px solid #fff; border-radius:50%; color:#fff; box-shadow:0 3px 10px rgba(25,60,95,.16); }
+    .timeline-icon.blue { background:#4d77d9; }.timeline-icon.amber { background:#d58b2d; }.timeline-icon.orange { background:#e36b36; }.timeline-icon.teal { background:#249d98; }.timeline-icon.slate { background:#75879a; }
+    .timeline-content { min-width:0; padding:.05rem 0 .8rem; }
+    .timeline-main { display:flex; align-items:center; gap:.55rem; flex-wrap:wrap; }
+    .timeline-main strong { color:#24435d; font-size:.9rem; }
+    .timeline-kind { padding:.22rem .48rem; border-radius:999px; color:#58748b; background:#f0f5f8; font-size:.64rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
+    .timeline-description { margin:.3rem 0; color:#536a7d; font-size:.81rem; line-height:1.5; }
+    .timeline-meta { color:#8494a2; font-size:.73rem; }
+    .timeline-date { padding-top:.15rem; color:#8293a3; font-size:.72rem; white-space:nowrap; }
+    .timeline-link { display:inline-flex; align-items:center; gap:.25rem; margin-top:.35rem; color:#278c8a; font-size:.74rem; font-weight:800; text-decoration:none; }
+    .timeline-link:hover { color:#196c6a; text-decoration:underline; }
+    .timeline-empty { padding:2rem 1rem; color:#7b8c9b; text-align:center; }
+    @media (max-width:900px) { .asset-summary,.asset-information-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:650px) { .asset-hero { align-items:flex-start; flex-direction:column; }.asset-summary,.asset-information-grid { grid-template-columns:1fr; }.timeline-item { grid-template-columns:34px 1fr; }.timeline-date { grid-column:2; padding-top:0; margin-top:-.6rem; }.activity-body { padding:.9rem; } }
+</style>
+
+<div class="asset-page">
+    <div class="asset-hero">
+        <div>
+            <div class="eyebrow">Inventory / Complete activity</div>
+            <h2 class="page-title">{{ asset.asset_tag }}</h2>
+            <p class="muted mb-0">{{ asset.brand }} {{ asset.model }} · {{ asset.asset_type.name }}</p>
+        </div>
+        <div class="asset-actions"><a href="{% url 'assets' %}" class="btn btn-light"><i class="bi bi-arrow-left me-2"></i>Back to assets</a></div>
+    </div>
+
+    <div class="asset-summary">
+        <div class="summary-card"><small>Status</small><strong>{{ asset.get_status_display }}</strong></div>
+        <div class="summary-card"><small>Condition</small><strong>{{ asset.get_condition_display }}</strong></div>
+        <div class="summary-card"><small>Department</small><strong>{{ asset.department.name|default:'—' }}</strong></div>
+        <div class="summary-card"><small>Location</small><strong>{{ asset.location.name|default:'—' }}</strong></div>
+    </div>
+
+    <div class="asset-information-grid">
+        <section class="information-card">
+            <div class="information-header"><div class="information-title"><i class="bi bi-box-seam"></i><span>Asset information</span></div></div>
+            <div class="information-body">
+                <div class="information-row"><span>Asset tag</span><strong>{{ asset.asset_tag|default:'—' }}</strong></div>
+                <div class="information-row"><span>Asset type</span><strong>{{ asset.asset_type.name|default:'—' }}</strong></div>
+                <div class="information-row"><span>Brand</span><strong>{{ asset.brand|default:'—' }}</strong></div>
+                <div class="information-row"><span>Model</span><strong>{{ asset.model|default:'—' }}</strong></div>
+                <div class="information-row"><span>Serial number</span><strong>{{ asset.serial_number|default:'—' }}</strong></div>
+                <div class="information-row"><span>Purchase date</span><strong>{{ asset.purchase_date|date:'M j, Y'|default:'—' }}</strong></div>
+                <div class="information-row"><span>Warranty expiration</span><strong>{{ asset.warranty_expiration|date:'M j, Y'|default:'—' }}</strong></div>
+            </div>
+        </section>
+
+        <section class="information-card">
+            <div class="information-header"><div class="information-title"><i class="bi bi-people"></i><span>Current holders</span></div><span class="holder-count">{{ current_holders|length }}</span></div>
+            <div class="information-body">
+                {% if current_holders %}
+                    <div class="holders-list">
+                    {% for assignment in current_holders %}
+                        {% with holder=assignment.employee %}
+                        <div class="holder-block">
+                            <div class="holder-profile"><div class="holder-avatar">{{ holder.name|first|upper }}</div><div><strong>{{ holder.name }}</strong><small>{{ holder.role|default:'Employee' }}</small></div></div>
+                            <div class="information-row"><span>Employee ID</span><strong>{{ holder.employee_id|default:'—' }}</strong></div>
+                            <div class="information-row"><span>Email</span><strong>{{ holder.email|default:'—' }}</strong></div>
+                            <div class="information-row"><span>Department</span><strong>{{ holder.department.name|default:'—' }}</strong></div>
+                            <div class="information-row"><span>Location</span><strong>{{ holder.location.name|default:'—' }}</strong></div>
+                            <div class="information-row"><span>Assigned since</span><strong>{{ assignment.start_date|date:'M j, Y'|default:'—' }}</strong></div>
+                        </div>
+                        {% endwith %}
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="holder-empty"><i class="bi bi-person-dash"></i><strong>No current holder</strong><span>This asset is not currently assigned.</span></div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+
+    <section class="activity-card">
+        <div class="activity-header"><div class="activity-title"><i class="bi bi-clock-history"></i><span>Complete asset activity</span></div><span class="activity-count">{{ asset_activity|length }} event{{ asset_activity|length|pluralize }}</span></div>
+        <div class="activity-body">
+            {% if asset_activity %}
+            <div class="timeline">
+                {% for event in asset_activity %}
+                <article class="timeline-item">
+                    <div class="timeline-icon {{ event.tone }}"><i class="bi {{ event.icon }}"></i></div>
+                    <div class="timeline-content">
+                        <div class="timeline-main"><strong>{{ event.title }}</strong><span class="timeline-kind">{{ event.kind }}</span></div>
+                        <div class="timeline-description">{{ event.description }}</div>
+                        <div class="timeline-meta"><i class="bi bi-person me-1"></i>{{ event.actor }}{% if event.meta %}<span class="mx-2">·</span>{{ event.meta }}{% endif %}</div>
+                        {% if event.url %}<a class="timeline-link" href="{{ event.url }}">Open quality inspection <i class="bi bi-arrow-up-right"></i></a>{% endif %}
+                    </div>
+                    <time class="timeline-date">{{ event.date_label }}</time>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="timeline-empty"><i class="bi bi-clock-history d-block fs-3 mb-2"></i>No activity has been recorded for this asset yet.</div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}

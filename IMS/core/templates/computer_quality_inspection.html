@@ -1,0 +1,509 @@
+{% extends "base.html" %}
+
+{% block title %}GEMS IT · Computer Quality Inspection{% endblock %}
+{% block breadcrumb %}Computer Quality Inspection{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --inspection-ink: #172337;
+        --inspection-muted: #718096;
+        --inspection-line: #dce4ee;
+        --inspection-soft: #f5f8fc;
+        --inspection-blue: #2068a9;
+        --inspection-navy: #123b68;
+        --inspection-green: #15856b;
+    }
+
+    .inspection-page { color: var(--inspection-ink); }
+    .inspection-hero {
+        display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+    .inspection-hero h2 { margin: .2rem 0 .35rem; letter-spacing: -.035em; }
+    .inspection-hero p { max-width: 650px; }
+    .inspection-actions { display: flex; gap: .55rem; flex-wrap: wrap; justify-content: flex-end; }
+    .inspection-actions .btn { min-height: 42px; border-radius: 10px; font-weight: 650; }
+
+    .inspection-editor {
+        border: 1px solid var(--inspection-line); border-radius: 18px; background: #fff;
+        box-shadow: 0 18px 55px rgba(18, 59, 104, .08); overflow: hidden;
+    }
+    .editor-header {
+        display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+        padding: 1rem 1.25rem; border-bottom: 1px solid var(--inspection-line);
+        background: linear-gradient(135deg, #f9fbfe, #eef5fc);
+    }
+    .editor-title { display: flex; align-items: center; gap: .75rem; }
+    .editor-icon {
+        display: grid; width: 40px; height: 40px; place-items: center; border-radius: 12px;
+        color: #fff; background: linear-gradient(135deg, var(--inspection-blue), #4b9ad7);
+        box-shadow: 0 7px 16px rgba(32, 104, 169, .22);
+    }
+    .editor-title strong { display: block; font-size: .94rem; }
+    .editor-title small { color: var(--inspection-muted); }
+    .editor-status { display: flex; align-items: center; gap: .45rem; color: var(--inspection-muted); font-size: .78rem; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #39a878; }
+
+    .inspection-grid { display: grid; grid-template-columns: minmax(310px, .85fr) minmax(620px, 1.65fr); min-height: 680px; }
+    .inspection-form { padding: 1.25rem; background: #fbfcfe; border-right: 1px solid var(--inspection-line); overflow: auto; max-height: 78vh; }
+    .form-section { margin-bottom: 1.25rem; }
+    .form-section:last-child { margin-bottom: 0; }
+    .form-section-heading {
+        display: flex; align-items: center; gap: .55rem; margin-bottom: .8rem; color: #31445d;
+        font-size: .76rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+    }
+    .form-section-heading::after { content: ""; height: 1px; flex: 1; background: var(--inspection-line); }
+    .form-label { margin-bottom: .35rem; color: #43546b; font-size: .76rem; font-weight: 700; }
+    .form-control, .form-select { min-height: 40px; border-color: #d8e1ec; border-radius: 9px; font-size: .86rem; }
+    .form-control:focus, .form-select:focus { border-color: #7fb2dd; box-shadow: 0 0 0 3px rgba(32,104,169,.11); }
+    .check-editor { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; }
+    .check-editor-row { display: grid; grid-template-columns: minmax(0, 1fr) 106px; align-items: center; gap: .5rem; padding: .5rem .6rem; border: 1px solid #e3e9f1; border-radius: 9px; background: #fff; }
+    .check-editor-row span { overflow: hidden; color: #46566b; font-size: .76rem; text-overflow: ellipsis; white-space: nowrap; }
+    .check-editor-row .form-select { min-height: 34px; padding-top: .2rem; padding-bottom: .2rem; font-size: .73rem; }
+
+    .preview-pane { padding: 1.25rem; background: #e9eef5; overflow: auto; }
+    .preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .9rem; color: #64748b; font-size: .75rem; }
+    .preview-toolbar strong { color: #31445d; }
+    .preview-canvas { display: flex; gap: 14px; align-items: flex-start; min-width: 1050px; }
+    .inspection-sheet {
+        width: 510px; min-width: 510px; padding: 13px; color: #111; background: #fff;
+        border: 1px solid #c8ced6; box-shadow: 0 8px 26px rgba(22, 42, 68, .13); font-family: Arial, sans-serif;
+    }
+    .sheet-brand { display: grid; grid-template-columns: 62px 1fr; height: 38px; border: 1px solid #222; }
+    .sheet-logo { display: grid; place-items: center; color: var(--inspection-green); font-weight: 900; font-size: 18px; font-style: italic; border-right: 1px solid #222; }
+    .sheet-logo small { display: block; margin-top: -4px; color: #5c7b69; font-size: 5px; font-style: normal; letter-spacing: .04em; }
+    .sheet-title { display: grid; place-items: center; font-size: 9px; font-weight: 800; letter-spacing: .04em; }
+    .sheet-meta { display: grid; grid-template-columns: 1fr 1fr; border-left: 1px solid #222; border-top: 0; }
+    .sheet-meta > div { display: grid; grid-template-columns: 68px 1fr; min-height: 16px; border-right: 1px solid #222; border-bottom: 1px solid #222; font-size: 7px; }
+    .sheet-meta > div:nth-child(2n) { border-right: 1px solid #222; }
+    .sheet-meta label { padding: 3px; background: #f0f1f2; font-weight: 700; }
+    .sheet-value { min-width: 0; padding: 3px; overflow: hidden; white-space: nowrap; }
+    .sheet-section-title { padding: 3px; border: 1px solid #222; border-top: 0; background: #dfe1e3; text-align: center; font-size: 7px; font-weight: 800; }
+    .spec-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; border-left: 1px solid #222; }
+    .spec-cell { display: grid; grid-template-columns: auto 1fr; min-height: 16px; border-right: 1px solid #222; border-bottom: 1px solid #222; font-size: 7px; }
+    .spec-cell label { padding: 3px; font-weight: 700; }
+    .spec-cell .sheet-value { padding-left: 1px; }
+    .inspection-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 6.6px; }
+    .inspection-table th, .inspection-table td { height: 15px; padding: 2px 3px; border: 1px solid #222; line-height: 1.05; }
+    .inspection-table th { background: #dfe1e3; font-size: 6.4px; font-weight: 800; text-align: center; }
+    .inspection-table th:first-child, .inspection-table td:first-child { width: 27%; text-align: left; }
+    .inspection-table th:nth-child(2) { width: 24%; }
+    .inspection-table th:nth-child(3) { width: 24%; }
+    .inspection-table th:nth-child(4) { width: 12%; }
+    .inspection-table th:nth-child(5) { width: 13%; }
+    .inspection-table .cell-center { text-align: center; }
+    .inspection-table .status-pill { font-weight: 700; }
+    .software-table th:first-child, .software-table td:first-child { width: 30%; }
+    .software-table th:nth-child(2) { width: 19%; }
+    .software-table th:nth-child(3) { width: 13%; }
+    .software-table th:nth-child(4) { width: 25%; }
+    .software-table th:nth-child(5) { width: 13%; }
+    .signoff { display: grid; grid-template-columns: 1.2fr 1.2fr 1.2fr 1.2fr 1.4fr; border-left: 1px solid #222; }
+    .signoff-cell { min-height: 53px; border-right: 1px solid #222; border-bottom: 1px solid #222; font-size: 6px; }
+    .signoff-label { display: block; padding: 3px; border-bottom: 1px solid #222; background: #dfe1e3; font-weight: 800; }
+    .signoff-value { display: block; padding: 4px; }
+    .sheet-footer { display: flex; justify-content: space-between; padding-top: 4px; color: #555; font-size: 5px; }
+
+    @media (max-width: 1200px) {
+        .inspection-grid { grid-template-columns: 1fr; }
+        .inspection-form { max-height: none; border-right: 0; border-bottom: 1px solid var(--inspection-line); }
+        .preview-pane { min-height: 720px; }
+    }
+    @media (max-width: 640px) {
+        .inspection-hero { align-items: flex-start; flex-direction: column; }
+        .inspection-actions { justify-content: flex-start; }
+        .check-editor { grid-template-columns: 1fr; }
+        .inspection-form, .preview-pane { padding: .9rem; }
+    }
+
+    @media print {
+        @page { size: A4 landscape; margin: 7mm; }
+        body { background: #fff !important; }
+        .sidebar, .topbar, .inspection-hero, .inspection-editor > .editor-header, .inspection-form, .preview-toolbar, .toast-container { display: none !important; }
+        .main, .page-wrap { width: 100% !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
+        .inspection-editor { border: 0; box-shadow: none; overflow: visible; }
+        .inspection-grid { display: block; min-height: 0; }
+        .preview-pane { padding: 0; overflow: visible; background: #fff; }
+        .preview-canvas { display: flex; gap: 6mm; min-width: 0; width: 100%; }
+        .inspection-sheet { width: calc(50% - 3mm); min-width: 0; padding: 3mm; box-shadow: none; border-color: #111; }
+    }
+
+    /* Revamped asset-first inspection workflow */
+    .inspection-page {
+        --inspection-cyan: #1aa6a3;
+        --inspection-purple: #5b5bd6;
+    }
+    .inspection-hero { position: relative; padding: 1.35rem 1.5rem; margin: -0.35rem -.25rem 1.25rem; border: 1px solid #dce7f2; border-radius: 22px; background: radial-gradient(circle at 100% 0%, rgba(91,91,214,.14), transparent 32%), linear-gradient(135deg, #f8fbff, #eef8f8); overflow: hidden; }
+    .inspection-hero::after { content: ""; position: absolute; width: 180px; height: 180px; right: 10%; top: -100px; border: 24px solid rgba(26,166,163,.08); border-radius: 50%; }
+    .inspection-hero > * { position: relative; z-index: 1; }
+    .inspection-hero h2 { font-size: clamp(1.55rem, 2vw, 2.15rem); }
+    .inspection-actions .btn { box-shadow: 0 7px 16px rgba(25,60,100,.08); }
+    .inspection-editor { border-radius: 22px; box-shadow: 0 22px 70px rgba(18,59,104,.10); }
+    .editor-header { padding: 1.1rem 1.35rem; background: linear-gradient(120deg, #102f55, #1e638d); color: #fff; border-bottom: 0; }
+    .editor-title strong { color: #fff; }
+    .editor-title small, .editor-status { color: rgba(255,255,255,.72); }
+    .editor-icon { background: linear-gradient(135deg, var(--inspection-cyan), #63d0c4); color: #073c43; }
+    .status-dot { background: #76e7bd; box-shadow: 0 0 0 4px rgba(118,231,189,.14); }
+    .inspection-form { padding: 1.35rem; background: linear-gradient(180deg, #fbfdff, #f5f8fc); }
+    .form-section { padding: 1rem; margin-bottom: 1rem; border: 1px solid #e1e9f2; border-radius: 15px; background: rgba(255,255,255,.82); box-shadow: 0 5px 14px rgba(33,66,104,.035); }
+    .form-section-heading { margin-left: -.1rem; }
+    .asset-lookup {
+        margin-bottom: 1rem; padding: 1rem; border: 1px solid #b9e4e2; border-radius: 15px;
+        background: linear-gradient(135deg, #effcfa, #f5f8ff);
+    }
+    .asset-lookup-heading { display:flex; align-items:center; gap:.65rem; margin-bottom:.7rem; }
+    .asset-lookup-heading .lookup-icon { display:grid; width:34px; height:34px; place-items:center; border-radius:10px; color:#fff; background:linear-gradient(135deg,var(--inspection-cyan),var(--inspection-purple)); }
+    .asset-lookup-heading strong { display:block; color:#183b56; font-size:.9rem; }
+    .asset-lookup-heading small { color:#6f8194; }
+    .asset-search-wrap { position:relative; }
+    .asset-search-wrap .form-control { min-height:46px; padding-right:2.7rem; border-color:#8dd5d1; border-radius:11px; font-weight:650; letter-spacing:.02em; }
+    .asset-search-wrap .bi { position:absolute; right:1rem; top:50%; color:#2c9e9a; transform:translateY(-50%); pointer-events:none; }
+    .asset-lookup-status { min-height:1.15rem; margin-top:.45rem; font-size:.74rem; }
+    .asset-lookup-status.is-found { color:#087f65; }
+    .asset-lookup-status.is-missing { color:#b42318; }
+    .asset-quick-facts { display:none; grid-template-columns:repeat(3,1fr); gap:.45rem; margin-top:.7rem; }
+    .asset-quick-facts.is-visible { display:grid; }
+    .asset-quick-fact { padding:.5rem .6rem; border-radius:9px; background:#fff; border:1px solid #dcebea; }
+    .asset-quick-fact small { display:block; color:#7b8b9b; font-size:.62rem; text-transform:uppercase; letter-spacing:.06em; }
+    .asset-quick-fact strong { display:block; overflow:hidden; color:#27435a; font-size:.75rem; text-overflow:ellipsis; white-space:nowrap; }
+    .preview-pane { background: radial-gradient(circle at 10% 0%, rgba(91,91,214,.08), transparent 25%), #e9eef5; }
+    .preview-toolbar { padding:.6rem .75rem; border:1px solid #d9e3ee; border-radius:10px; background:rgba(255,255,255,.72); }
+    @media (max-width: 640px) { .asset-quick-facts { grid-template-columns:1fr; } .inspection-hero { margin-left:0; margin-right:0; padding:1rem; } }
+
+
+    /* Readability pass: use large single-sheet previews on screen. */
+    .inspection-grid { grid-template-columns: minmax(560px, 1.55fr) minmax(390px, .85fr); min-height: 0; align-items: start; }
+    .inspection-form { min-width: 0; height: calc(100vh - 125px); max-height: calc(100vh - 125px); min-height: 480px; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; padding-bottom: 3rem; font-size: .94rem; }
+    .inspection-form .form-label { font-size: .84rem; }
+    .inspection-form .form-control, .inspection-form .form-select { min-height: 44px; font-size: .93rem; }
+    .check-editor { grid-template-columns: 1fr; gap: .65rem; }
+    .check-editor-row { grid-template-columns: minmax(0, 1fr) 138px; padding: .68rem .75rem; }
+    .check-editor-row span { font-size: .86rem; }
+    .check-editor-row .form-select { min-height: 38px; font-size: .84rem; }
+    .preview-pane { min-width: 0; padding: 1rem; }
+    .preview-canvas { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; min-width: 0; }
+    .inspection-sheet { width: min(100%, 500px); min-width: 0; padding: 10px; font-size: 7.5px; }
+    .sheet-brand { grid-template-columns: 64px 1fr; height: 40px; }
+    .sheet-logo { font-size: 17px; }
+    .sheet-logo small { font-size: 7px; }
+    .sheet-title { font-size: 8.5px; }
+    .sheet-meta > div { grid-template-columns: 64px 1fr; min-height: 17px; font-size: 6.8px; }
+    .sheet-meta label, .sheet-value { padding: 5px; }
+    .sheet-section-title { padding: 3px; font-size: 6.8px; }
+    .spec-cell { min-height: 17px; font-size: 6.8px; }
+    .spec-cell label { padding: 5px; }
+    .inspection-table { font-size: 6.2px; }
+    .inspection-table th, .inspection-table td { height: 16px; padding: 2px 3px; }
+    .inspection-table th { font-size: 6px; }
+    .signoff-cell { min-height: 48px; font-size: 6px; }
+    .signoff-label, .signoff-value { padding: 5px; }
+    .sheet-footer { font-size: 5.4px; }
+    @media (max-width: 1200px) {
+        .inspection-grid { grid-template-columns: 1fr; }
+        .inspection-form { height: auto; max-height: none; overflow: visible; }
+        .preview-pane { min-height: 0; }
+    }
+    @media print {
+        .inspection-sheet { width: calc(50% - 3mm); min-width: 0; padding: 3mm; font-size: 6.6px; }
+        .sheet-brand { grid-template-columns: 62px 1fr; height: 38px; }
+        .sheet-logo { font-size: 18px; }
+        .sheet-logo small { font-size: 5px; }
+        .sheet-title { font-size: 9px; }
+        .sheet-meta > div { grid-template-columns: 68px 1fr; min-height: 16px; font-size: 7px; }
+        .sheet-meta label, .sheet-value { padding: 3px; }
+        .sheet-section-title { padding: 3px; font-size: 7px; }
+        .spec-cell { min-height: 16px; font-size: 7px; }
+        .spec-cell label { padding: 3px; }
+        .inspection-table { font-size: 6.6px; }
+        .inspection-table th, .inspection-table td { height: 15px; padding: 2px 3px; }
+        .inspection-table th { font-size: 6.4px; }
+        .signoff-cell { min-height: 53px; font-size: 6px; }
+        .signoff-label, .signoff-value { padding: 3px; }
+        .sheet-footer { font-size: 5px; }
+    }
+
+
+    /* Reference-form print output: two identical copies on one A4 landscape page. */
+    @media print {
+        @page { size: A4 landscape; margin: 6mm; }
+        .preview-pane { padding: 0; background: #fff; }
+        .preview-canvas { display: flex !important; flex-direction: row !important; align-items: flex-start; justify-content: space-between; gap: 5mm; width: 100%; min-width: 0; }
+        .inspection-sheet { display: block; flex: 1 1 0; width: calc(50% - 2.5mm) !important; max-width: none; min-width: 0; padding: 3mm !important; border: 1px solid #111; box-shadow: none; color: #111; font-family: Arial, sans-serif; }
+        .sheet-brand { grid-template-columns: 62px 1fr !important; height: 38px !important; }
+        .sheet-logo { font-size: 18px !important; }
+        .sheet-logo small { font-size: 5px !important; }
+        .sheet-title { font-size: 9px !important; }
+        .sheet-meta > div { grid-template-columns: 68px 1fr !important; min-height: 16px !important; font-size: 7px !important; }
+        .sheet-meta label, .sheet-value { padding: 3px !important; }
+        .sheet-section-title { padding: 3px !important; font-size: 7px !important; }
+        .spec-cell { min-height: 16px !important; font-size: 7px !important; }
+        .spec-cell label { padding: 3px !important; }
+        .inspection-table { font-size: 6.6px !important; }
+        .inspection-table th, .inspection-table td { height: 15px !important; padding: 2px 3px !important; }
+        .inspection-table th { font-size: 6.4px !important; }
+        .signoff-cell { min-height: 53px !important; font-size: 6px !important; }
+        .signoff-label, .signoff-value { padding: 3px !important; }
+        .sheet-footer { font-size: 5px !important; }
+    }
+
+
+    /* Form-only frontend layout */
+    .inspection-editor { max-width: 1180px; margin: 0 auto; border: 1px solid #dce7f1; border-radius: 24px; background: #fff; box-shadow: 0 22px 65px rgba(18,59,104,.10); overflow: hidden; }
+    .inspection-grid { display: block; min-height: 0; }
+    .inspection-form { width: 100%; max-width: none; height: auto; max-height: none; overflow: visible; padding: clamp(1rem, 2vw, 1.65rem); border: 0; background: linear-gradient(180deg, #fbfdff, #f5f8fc); }
+    .form-section { padding: clamp(1rem, 1.8vw, 1.35rem); margin-bottom: 1rem; border: 1px solid #dbe6f0; border-radius: 17px; background: #fff; box-shadow: 0 7px 22px rgba(30,73,113,.05); }
+    .form-section-heading { display:flex; align-items:center; gap:.55rem; margin-bottom:1rem; padding-bottom:.65rem; border-bottom:1px solid #edf1f5; color:#1d3d5b; font-size:1rem; }
+    .form-section-heading i { display:grid; width:30px; height:30px; place-items:center; border-radius:9px; color:#fff; background:linear-gradient(135deg,#1aa6a3,#5b5bd6); }
+    .form-label { color:#50667b; font-weight:700; }
+    .inspection-form .form-control, .inspection-form .form-select { border-color:#d4e0eb; background:#fff; box-shadow:0 2px 5px rgba(30,73,113,.03); }
+    .inspection-form .form-control:focus, .inspection-form .form-select:focus { border-color:#32aaa7; box-shadow:0 0 0 4px rgba(50,170,167,.12); }
+    .asset-lookup { position:sticky; top:.75rem; z-index:3; padding:1.1rem 1.2rem; border:1px solid #a9dfdc; border-radius:17px; background:linear-gradient(135deg,#effcfa,#f4f6ff); box-shadow:0 10px 24px rgba(26,166,163,.10); }
+    .check-editor-row { border-color:#dfe8f0; background:#fff; }
+
+    .software-check-list { display:grid; gap:.55rem; overflow-x:auto; }
+    .software-check-group-title { display:flex; align-items:center; gap:.45rem; margin:.35rem 0 .1rem; color:#2c4d68; font-size:.8rem; font-weight:850; }
+    .software-check-group-title i { color:#238c8a; }
+    .access-title { margin-top:1rem; }
+    .software-check-head, .software-check-row { display:grid; grid-template-columns:1.05fr 1.25fr .9fr 1.15fr .85fr; gap:.5rem; align-items:center; min-width:930px; }
+    .software-check-head { padding:0 .7rem .2rem; color:#738497; font-size:.67rem; font-weight:850; letter-spacing:.07em; text-transform:uppercase; }
+    .software-check-row { padding:.55rem .65rem; border:1px solid #dfe8f0; border-radius:11px; background:#fff; box-shadow:0 3px 10px rgba(30,73,113,.025); }
+    .software-check-name { color:#40566d; font-size:.78rem; font-weight:750; }
+    .software-check-row .form-control, .software-check-row .form-select { min-height:37px; padding:.4rem .5rem; font-size:.73rem; }
+    @media (max-width:700px) { .software-check-head,.software-check-row { min-width:930px; } }
+
+    .hardware-check-list { display: grid; gap: .55rem; overflow-x: auto; }
+    .hardware-check-head, .hardware-check-row { display: grid; grid-template-columns: 1.2fr 1.35fr 1.35fr .9fr; gap: .5rem; align-items: center; min-width: 900px; }
+    .hardware-check-head { padding: 0 .7rem .2rem; color: #738497; font-size: .67rem; font-weight: 850; letter-spacing: .07em; text-transform: uppercase; }
+    .hardware-check-row { padding: .55rem .65rem; border: 1px solid #dfe8f0; border-radius: 11px; background: #fff; box-shadow: 0 3px 10px rgba(30,73,113,.025); }
+    .hardware-check-name { color: #40566d; font-size: .78rem; font-weight: 750; }
+    .hardware-check-row .form-control, .hardware-check-row .form-select { min-height: 37px; padding: .4rem .5rem; font-size: .73rem; }
+    @media (max-width: 700px) { .hardware-check-head, .hardware-check-row { min-width: 820px; } }
+
+    .inspection-actions { display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
+    .inspection-actions .btn { min-height:42px; border-radius:11px; font-weight:700; }
+    .editor-header { background:linear-gradient(120deg,#102f55,#1e638d); }
+    @media (max-width: 700px) { .asset-lookup { position:static; } .inspection-hero { align-items:flex-start; flex-direction:column; } }
+
+</style>
+
+<div class="inspection-page">
+    <div class="inspection-hero">
+        <div>
+            <div class="eyebrow">Quality assurance / Asset intake</div>
+            <h2 class="page-title">Computer quality inspection</h2>
+            <p class="muted mb-0">Capture condition, hardware function, software activation, and approval details in one printable inspection record.</p>
+        </div>
+        <div class="inspection-actions">
+            <button type="button" class="btn btn-light" id="clearInspection"><i class="bi bi-arrow-counterclockwise me-2"></i>Clear</button>
+            <button type="submit" form="inspectionForm" class="btn btn-outline-primary"><i class="bi bi-cloud-arrow-up me-2"></i>Save inspection</button>
+            <!-- PDF preview/print disabled on the frontend. Saved records can still be printed from the detail page. -->
+        </div>
+    </div>
+
+    <div class="inspection-editor">
+        <div class="editor-header">
+            <div class="editor-title">
+                <span class="editor-icon"><i class="bi bi-clipboard2-pulse"></i></span>
+                <div><strong>Inspection workspace</strong><small>Complete the fields and review both copies before printing.</small></div>
+            </div>
+            <div class="editor-status"><span class="status-dot"></span>Live preview</div>
+        </div>
+
+        <div class="inspection-grid">
+            <form class="inspection-form" id="inspectionForm" method="post" data-logged-in-user="{{ request.user.username|escapejs }}">
+                {% csrf_token %}
+                <div class="asset-lookup">
+                    <div class="asset-lookup-heading">
+                        <span class="lookup-icon"><i class="bi bi-search"></i></span>
+                        <div><strong>Start with an existing asset</strong><small>Search by asset tag to auto-fill the inspection details.</small></div>
+                    </div>
+                    <div class="asset-search-wrap">
+                        <input class="form-control" id="assetTagLookup" name="asset_tag" list="inspectionAssetTags" autocomplete="off" placeholder="Enter or select an asset tag" required>
+                        <i class="bi bi-upc-scan"></i>
+                        <datalist id="inspectionAssetTags"></datalist>
+                    </div>
+                    <div class="asset-lookup-status" id="assetLookupStatus" role="status">Only existing asset tags can be inspected.</div>
+                    <div class="asset-quick-facts" id="assetQuickFacts">
+                        <div class="asset-quick-fact"><small>Type</small><strong data-asset-fact="type">—</strong></div>
+                        <div class="asset-quick-fact"><small>Location</small><strong data-asset-fact="location">—</strong></div>
+                        <div class="asset-quick-fact"><small>Assigned to</small><strong data-asset-fact="holder">—</strong></div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-heading"><i class="bi bi-person-badge"></i>Intake details</div>
+                    <div class="row g-2">
+                        <div class="col-12"><label class="form-label" for="userName">User name</label><input class="form-control" id="userName" name="user_name" data-preview="user_name" placeholder="e.g. Maria Santos"></div>
+                        <div class="col-7"><label class="form-label" for="position">Position</label><input class="form-control" id="position" name="position" data-preview="position" placeholder="e.g. Finance Officer"></div>
+                        <div class="col-5"><label class="form-label" for="inspectionDate">Assigned date / inspection date</label><input class="form-control" id="inspectionDate" name="inspection_date" data-preview="inspection_date" type="date"></div>
+                        <div class="col-7"><label class="form-label" for="supplier">Supplier</label><input class="form-control" id="supplier" name="supplier" data-preview="supplier" placeholder="Supplier name"></div>
+                        <div class="col-5"><label class="form-label" for="purchasedDate">Purchased date</label><input class="form-control" id="purchasedDate" name="purchased_date" data-preview="purchased_date" type="date"></div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-heading"><i class="bi bi-pc-display"></i>Computer specification</div>
+                    <div class="row g-2">
+                        <div class="col-6"><label class="form-label" for="computerType">Computer type</label><select class="form-select" id="computerType" name="computer_type" data-preview="computer_type"><option value="">Select type</option><option>Laptop</option><option>Desktop</option><option>All-in-one</option><option>Workstation</option></select></div>
+                        <div class="col-6"><label class="form-label" for="brand">Brand</label><input class="form-control" id="brand" name="brand" data-preview="brand" placeholder="Dell, HP, Lenovo..."></div>
+                        <div class="col-6"><label class="form-label" for="model">Model</label><input class="form-control" id="model" name="model" data-preview="model"></div>
+                        <div class="col-6"><label class="form-label" for="processor">Processor</label><input class="form-control" id="processor" name="processor" data-preview="processor" placeholder="Intel Core i5"></div>
+                        <div class="col-4"><label class="form-label" for="memory">Memory</label><input class="form-control" id="memory" name="memory" data-preview="memory" placeholder="16 GB"></div>
+                        <div class="col-4"><label class="form-label" for="hdd">HDD / SSD</label><input class="form-control" id="hdd" name="hdd" data-preview="hdd" placeholder="512 GB SSD"></div>
+                        <div class="col-4"><label class="form-label" for="odd">ODD</label><input class="form-control" id="odd" name="odd" data-preview="odd" placeholder="None"></div>
+                        <div class="col-6"><label class="form-label" for="serialNumber">Serial no.</label><input class="form-control" id="serialNumber" name="serial_number" data-preview="serial_number"></div>
+                        <div class="col-6"><label class="form-label" for="assetNo">Asset no.</label><input class="form-control" id="assetNo" name="asset_no" data-preview="asset_no"></div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-heading"><i class="bi bi-tools"></i>Hardware checks</div>
+                    <div class="hardware-check-list">
+                        <div class="hardware-check-head"><span>Item check</span><span>Appearance check</span><span>Function test</span><span>Signature</span></div>
+                        {% for key, label in hardware_checks %}
+                        <div class="hardware-check-row">
+                            <div class="hardware-check-name">{{ label }}</div>
+                            <input class="form-control" type="text" name="hardware_{{ key }}_appearance" placeholder="Describe appearance" aria-label="{{ label }} appearance check">
+                            <input class="form-control" type="text" name="hardware_{{ key }}_function" placeholder="Describe function" aria-label="{{ label }} function test">
+                            <input class="form-control signature-field" type="text" name="hardware_{{ key }}_signature" readonly placeholder="Auto-filled when this row is completed" aria-label="{{ label }} signature">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-heading"><i class="bi bi-shield-check"></i>Software and access</div>
+                    <div class="software-check-list">
+                        <div class="software-check-group-title"><i class="bi bi-window-stack"></i>Software checks</div>
+                        <div class="software-check-head"><span>Item check</span><span>Activation / value</span><span>Status</span><span>Remark</span><span>Signature</span></div>
+                        <div class="software-check-row"><div class="software-check-name">Operating system</div><input class="form-control" id="operatingSystem" name="operating_system" data-preview="operating_system" placeholder="Windows 11 Pro"><select class="form-select" id="osStatus" name="os_status" data-software="1"><option value="">Not set</option><option>Activated</option><option>Pending</option><option>N/A</option></select><input class="form-control" name="operating_system_remark" placeholder="Remark"><input class="form-control signature-field" name="operating_system_signature" readonly placeholder="Auto-filled when this row is completed"></div>
+                        <div class="software-check-row"><div class="software-check-name">Office application</div><input class="form-control" id="officeApplication" name="office_application" data-preview="office_application" placeholder="Microsoft 365"><select class="form-select" id="officeStatus" name="office_status" data-software="2"><option value="">Not set</option><option>Activated</option><option>Pending</option><option>N/A</option></select><input class="form-control" name="office_application_remark" placeholder="Remark"><input class="form-control signature-field" name="office_application_signature" readonly placeholder="Auto-filled when this row is completed"></div>
+                        <div class="software-check-row"><div class="software-check-name">Anti-virus</div><input class="form-control" id="antivirus" name="antivirus" data-preview="antivirus" placeholder="Microsoft Defender"><select class="form-select" id="antivirusStatus" name="antivirus_status" data-software="3"><option value="">Not set</option><option>Active</option><option>Inactive</option><option>N/A</option></select><input class="form-control" name="antivirus_remark" placeholder="Remark"><input class="form-control signature-field" name="antivirus_signature" readonly placeholder="Auto-filled when this row is completed"></div>
+                        <div class="software-check-row"><div class="software-check-name">Other software</div><input class="form-control" id="otherSoftware" name="other_software" data-preview="other_software"><select class="form-select" id="otherSoftwareStatus" name="other_software_status" data-software="4"><option value="">Not set</option><option>Active</option><option>Inactive</option><option>N/A</option></select><input class="form-control" name="other_software_remark" placeholder="Remark"><input class="form-control signature-field" name="other_software_signature" readonly placeholder="Auto-filled when this row is completed"></div>
+
+                        <div class="software-check-group-title access-title"><i class="bi bi-shield-lock"></i>Access checks</div>
+                        <div class="software-check-head"><span>Item check</span><span>Access / value</span><span>Status</span><span>Remark</span><span>Signature</span></div>
+                        <div class="software-check-row"><div class="software-check-name">Profile / Domain Profile</div><input class="form-control" id="profile" name="profile" data-preview="profile"><select class="form-select" id="profileStatus" name="profile_status" data-access="1"><option value="">Not set</option><option>Configured</option><option>Pending</option><option>N/A</option></select><input class="form-control" name="profile_remark" placeholder="Remark"><input class="form-control signature-field" name="profile_signature" readonly placeholder="Auto-filled when this row is completed"></div>
+                        <div class="software-check-row"><div class="software-check-name">Email</div><input class="form-control" id="email" name="email" data-preview="email"><select class="form-select" id="emailStatus" name="email_status" data-access="2"><option value="">Not set</option><option>Granted</option><option>Pending</option><option>N/A</option></select><input class="form-control" name="email_remark" placeholder="Remark"><input class="form-control signature-field" name="email_signature" readonly placeholder="Auto-filled when this row is completed"></div>
+                        <div class="software-check-row"><div class="software-check-name">Bitlocker</div><input class="form-control" id="bitlocker" name="bitlocker" data-preview="bitlocker" placeholder="Recovery key verified"><select class="form-select" id="bitlockerStatus" name="bitlocker_status" data-access="3"><option value="">Not set</option><option>Enabled</option><option>Pending</option><option>N/A</option></select><input class="form-control" name="bitlocker_remark" placeholder="Remark"><input class="form-control signature-field" name="bitlocker_signature" readonly placeholder="Auto-filled when this row is completed"></div>
+                        <div class="software-check-row"><div class="software-check-name">NAV</div><input class="form-control" id="nav" name="nav" data-preview="nav"><select class="form-select" id="navStatus" name="nav_status" data-access="4"><option value="">Not set</option><option>Configured</option><option>Pending</option><option>N/A</option></select><input class="form-control" name="nav_remark" placeholder="Remark"><input class="form-control signature-field" name="nav_signature" readonly placeholder="Auto-filled when this row is completed"></div>
+                        <div class="software-check-row"><div class="software-check-name">Fileserver</div><input class="form-control" id="fileserver" name="fileserver" data-preview="fileserver"><select class="form-select" id="fileserverStatus" name="fileserver_status" data-access="5"><option value="">Not set</option><option>Connected</option><option>Pending</option><option>N/A</option></select><input class="form-control" name="fileserver_remark" placeholder="Remark"><input class="form-control signature-field" name="fileserver_signature" readonly placeholder="Auto-filled when this row is completed"></div>
+                        <div class="software-check-row"><div class="software-check-name">Network</div><input class="form-control" id="network" name="network" data-preview="network" placeholder="Wi-Fi / LAN test"><select class="form-select" id="networkStatus" name="network_status" data-access="6"><option value="">Not set</option><option>Connected</option><option>Pending</option><option>N/A</option></select><input class="form-control" name="network_remark" placeholder="Remark"><input class="form-control signature-field" name="network_signature" readonly placeholder="Auto-filled when this row is completed"></div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-heading"><i class="bi bi-pen"></i>Approval</div>
+                    <div class="row g-2">
+                        <div class="col-6"><label class="form-label" for="verifiedBy">Verified by</label><input class="form-control" id="verifiedBy" name="verified_by" data-preview="verified_by"></div>
+                        <div class="col-6"><label class="form-label" for="approvedBy">Approved by</label><input class="form-control" id="approvedBy" name="approved_by" data-preview="approved_by"></div>
+                        <div class="col-12"><label class="form-label" for="remarks">Remarks</label><textarea class="form-control" id="remarks" name="remarks" data-preview="remarks" rows="2" placeholder="Add observations or follow-up actions"></textarea></div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Document preview intentionally disabled: this page is form-only. -->
+        </div>
+    </div>
+</div>
+
+<script>
+(() => {
+    const form = document.getElementById("inspectionForm");
+    if (!form) return;
+    const actor = form.dataset.loggedInUser || "";
+    const rows = form.querySelectorAll(".hardware-check-row, .software-check-row");
+
+    rows.forEach((row) => {
+        const signature = row.querySelector(".signature-field");
+        if (!signature) return;
+        const editableFields = row.querySelectorAll("input:not(.signature-field), select, textarea");
+
+        const updateSignature = () => {
+            const rowHasValue = Array.from(editableFields).some((field) => String(field.value || "").trim() !== "");
+            signature.value = rowHasValue ? actor : "";
+        };
+
+        editableFields.forEach((field) => {
+            field.addEventListener("input", updateSignature);
+            field.addEventListener("change", updateSignature);
+        });
+        updateSignature();
+    });
+})();
+</script>
+
+<script>
+window.inspectionAssets = [
+{% for item in inspection_assets %}
+    { tag: "{{ item.asset_tag|escapejs }}", type: "{{ item.asset_type.name|escapejs }}", brand: "{{ item.brand|escapejs }}", model: "{{ item.model|escapejs }}", serial: "{{ item.serial_number|escapejs }}", location: "{{ item.location.name|escapejs }}", holder: "{{ item.current_holder_name|default:''|escapejs }}", purchaseDate: "{{ item.purchase_date|date:'Y-m-d' }}", assignedDate: "{{ item.current_assignment_date|date:'Y-m-d' }}" }{% if not forloop.last %},{% endif %}
+{% endfor %}
+];
+</script>
+
+
+<script>
+(() => {
+    const form = document.getElementById("inspectionForm");
+    const lookup = document.getElementById("assetTagLookup");
+    const status = document.getElementById("assetLookupStatus");
+    const facts = document.getElementById("assetQuickFacts");
+    const datalist = document.getElementById("inspectionAssetTags");
+    const assets = window.inspectionAssets || [];
+    if (!form || !lookup) return;
+
+    datalist.innerHTML = assets.map(asset => `<option value="${asset.tag}">${asset.brand || ""} ${asset.model || ""}</option>`).join("");
+    const setValue = (selector, next) => { const el = form.querySelector(selector); if (el && next != null) { el.value = next; el.dispatchEvent(new Event("input", { bubbles: true })); } };
+    const setFact = (name, text) => { const el = facts?.querySelector(`[data-asset-fact="${name}"]`); if (el) el.textContent = text || "—"; };
+
+    const applyAsset = () => {
+        const tag = lookup.value.trim().toLowerCase();
+        const asset = assets.find(item => String(item.tag).toLowerCase() === tag);
+        if (!tag) {
+            status.textContent = "Only existing asset tags can be inspected.";
+            status.className = "asset-lookup-status";
+            facts?.classList.remove("is-visible");
+            return;
+        }
+        if (!asset) {
+            status.textContent = "Asset tag not found. Choose an existing tag from the suggestions.";
+            status.className = "asset-lookup-status is-missing";
+            facts?.classList.remove("is-visible");
+            lookup.setCustomValidity("Select an existing asset tag.");
+            return;
+        }
+        lookup.setCustomValidity("");
+        status.textContent = `Asset found · ${asset.brand || ""} ${asset.model || ""} · details populated`;
+        status.className = "asset-lookup-status is-found";
+        facts?.classList.add("is-visible");
+        setFact("type", asset.type); setFact("location", asset.location); setFact("holder", asset.holder);
+        setValue('[data-preview="asset_no"]', asset.tag);
+        setValue('[data-preview="brand"]', asset.brand);
+        setValue('[data-preview="model"]', asset.model);
+        setValue('[data-preview="serial_number"]', asset.serial);
+        setValue('[data-preview="computer_type"]', asset.type);
+        setValue('[data-preview="purchased_date"]', asset.purchaseDate);
+        setValue('[data-preview="inspection_date"]', asset.assignedDate || "");
+        if (asset.holder) setValue('[data-preview="user_name"]', asset.holder);
+    };
+    lookup.addEventListener("input", applyAsset);
+    lookup.addEventListener("change", applyAsset);
+})();
+</script>
+
+<script>
+(() => {
+    const form = document.getElementById('inspectionForm');
+    const clearButton = document.getElementById('clearInspection');
+    // Frontend document preview and PDF print functions are intentionally disabled.
+    // Saved inspection records can be printed from the detail page.
+    clearButton?.addEventListener('click', () => {
+        form.reset();
+        document.getElementById('assetLookupStatus').textContent = 'Only existing asset tags can be inspected.';
+        document.getElementById('assetLookupStatus').className = 'asset-lookup-status';
+        document.getElementById('assetQuickFacts')?.classList.remove('is-visible');
+    });
+})();
+</script>
+{% endblock %}

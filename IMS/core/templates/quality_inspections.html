@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}GEMS IT · Quality Inspections{% endblock %}
+{% block breadcrumb %}Quality Inspections{% endblock %}
+
+{% block content %}
+<style>
+    .inspection-list { color:#172337; }
+    .list-hero { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:1.25rem; }
+    .list-hero h2 { margin:.2rem 0 .35rem; letter-spacing:-.035em; }
+    .list-actions { display:flex; gap:.55rem; flex-wrap:wrap; }
+    .list-actions .btn { min-height:42px; border-radius:10px; font-weight:650; }
+    .search-card { margin-bottom:1rem; padding:1rem; border:1px solid #dce6f0; border-radius:16px; background:#fff; box-shadow:0 10px 26px rgba(18,59,104,.05); }
+    .search-form { display:flex; gap:.65rem; align-items:center; }
+    .search-form .form-control, .search-form .form-select { min-height:44px; border-radius:10px; }
+    .search-form .form-control { flex:1; }
+    .table-card { overflow:hidden; border:1px solid #dce5ef; border-radius:16px; background:#fff; box-shadow:0 12px 32px rgba(18,59,104,.06); }
+    .inspection-table { width:100%; border-collapse:collapse; }
+    .inspection-table th, .inspection-table td { padding:.85rem 1rem; border-bottom:1px solid #e7edf3; text-align:left; vertical-align:middle; }
+    .inspection-table th { color:#63758a; background:#f6f9fc; font-size:.72rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase; }
+    .inspection-table td { color:#30465d; font-size:.86rem; }
+    .inspection-table tr:last-child td { border-bottom:0; }
+    .asset-link { color:#1766a3; font-weight:750; text-decoration:none; }
+    .asset-link:hover { text-decoration:underline; }
+    .result-badge { display:inline-flex; padding:.32rem .58rem; border-radius:999px; font-size:.72rem; font-weight:750; }
+    .result-pending { color:#785500; background:#fff4cc; }
+    .result-passed { color:#087f65; background:#dff7ed; }
+    .result-failed { color:#a42318; background:#fde5e3; }
+    .result-conditional { color:#315a8a; background:#e3effd; }
+    .empty-state { padding:3rem 1rem; color:#718096; text-align:center; }
+    @media (max-width:700px) { .list-hero { align-items:flex-start; flex-direction:column; } .search-form { align-items:stretch; flex-direction:column; } .search-form > * { width:100%; } .inspection-table { min-width:760px; } }
+</style>
+
+<div class="inspection-list">
+    <div class="list-hero">
+        <div>
+            <div class="eyebrow">Quality assurance / Records</div>
+            <h2 class="page-title">Quality inspections</h2>
+            <p class="muted mb-0">Search and review completed computer inspection records.</p>
+        </div>
+        <div class="list-actions">
+            <a href="{% url 'quality-inspection' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-2"></i>New inspection</a>
+        </div>
+    </div>
+
+    <div class="search-card">
+        <form method="get" class="search-form">
+            <div class="input-group flex-grow-1">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input type="search" name="q" class="form-control" value="{{ search_query|default:'' }}" placeholder="Search asset tag, serial number, or user name">
+            </div>
+            <select name="result" class="form-select">
+                <option value="">All results</option>
+                {% for value, label in inspection_results %}
+                    <option value="{{ value }}" {% if selected_result == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-funnel me-2"></i>Filter</button>
+        </form>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="inspection-table">
+                <thead><tr><th>Inspection</th><th>Asset tag</th><th>Serial number</th><th>User</th><th>Inspection date</th><th>Result</th><th></th></tr></thead>
+                <tbody>
+                    {% for inspection in inspections %}
+                    <tr>
+                        <td><strong>#{{ inspection.pk }}</strong></td>
+                        <td><a class="asset-link" href="{% url 'quality-inspection-detail' inspection.pk %}">{{ inspection.asset_no|default:"—" }}</a></td>
+                        <td>{{ inspection.serial_number|default:"—" }}</td>
+                        <td>{{ inspection.user_name|default:"—" }}</td>
+                        <td>{{ inspection.inspection_date|date:"M j, Y" }}</td>
+                        <td><span class="result-badge result-{{ inspection.result }}">{{ inspection.get_result_display }}</span></td>
+                        <td class="text-end"><a href="{% url 'quality-inspection-detail' inspection.pk %}" class="btn btn-sm btn-light"><i class="bi bi-arrow-up-right"></i></a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="empty-state"><i class="bi bi-clipboard2-x fs-2 d-block mb-2"></i>No quality inspections found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

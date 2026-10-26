@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}GEMS IT · Quality Inspection #{{ inspection.pk }}{% endblock %}
+{% block breadcrumb %}Quality Inspection · #{{ inspection.pk }}{% endblock %}
+
+{% block content %}
+<style>
+    .inspection-detail-page { color:#172337; }
+    .inspection-detail-hero { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:1.25rem; }
+    .inspection-detail-hero h2 { margin:.2rem 0 .35rem; letter-spacing:-.04em; }
+    .detail-actions { display:flex; gap:.55rem; flex-wrap:wrap; }
+    .detail-actions .btn { min-height:42px; border-radius:11px; font-weight:700; }
+    .details-card { overflow:hidden; margin-bottom:1rem; border:1px solid #dce7f1; border-radius:18px; background:#fff; box-shadow:0 12px 32px rgba(18,59,104,.06); }
+    .details-card-header { display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:1rem 1.2rem; border-bottom:1px solid #e5edf4; background:linear-gradient(120deg,#f7fbff,#f0faf8); }
+    .details-card-title { display:flex; align-items:center; gap:.65rem; color:#21425f; font-weight:800; }
+    .details-card-title i { display:grid; width:31px; height:31px; place-items:center; border-radius:10px; color:#fff; background:linear-gradient(135deg,#1aa6a3,#5b5bd6); }
+    .details-card-hint { color:#8090a0; font-size:.72rem; }
+    .details-card-body { padding:1.15rem; }
+    .details-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+    .details-grid.two { grid-template-columns:repeat(2,1fr); }
+    .field-label { display:block; margin:0 0 .35rem; color:#5d7185; font-size:.73rem; font-weight:800; letter-spacing:.045em; text-transform:uppercase; }
+    .editable-field, .readonly-field, .editable-area { width:100%; min-height:44px; padding:.65rem .78rem; border:1px solid #d6e2ec; border-radius:11px; color:#243e58; background:#fff; font-size:.88rem; }
+    .readonly-field { background:#f8fafc; }
+    .editable-area { min-height:92px; resize:vertical; }
+    .editable-field:focus, .editable-area:focus { border-color:#32aaa7; outline:0; box-shadow:0 0 0 4px rgba(50,170,167,.12); }
+    .summary-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:.7rem; margin-bottom:1rem; }
+    .summary-item { padding:.8rem .9rem; border:1px solid #dce7f1; border-radius:13px; background:#fff; }
+    .summary-item small { display:block; color:#7b8b9b; font-size:.66rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase; }
+    .summary-item strong { display:block; overflow:hidden; margin-top:.25rem; color:#21425f; font-size:.92rem; text-overflow:ellipsis; white-space:nowrap; }
+    .checks-table-wrap { overflow-x:auto; }
+    .checks-table { width:100%; min-width:920px; border-collapse:separate; border-spacing:0 .55rem; }
+    .checks-table th { padding:0 .7rem .2rem; color:#718396; font-size:.69rem; font-weight:850; letter-spacing:.07em; text-align:left; text-transform:uppercase; }
+    .checks-table td { padding:0 .45rem; vertical-align:middle; }
+    .checks-table td:first-child { width:19%; padding-left:0; color:#385169; font-size:.82rem; font-weight:750; }
+    .checks-table td:last-child { padding-right:0; }
+    .checks-table .editable-field { min-height:39px; padding:.5rem .55rem; font-size:.75rem; }
+    .status-select { min-height:39px; padding:.45rem .5rem; border:1px solid #d6e2ec; border-radius:10px; color:#40566d; background:#fff; font-size:.75rem; }
+    .status-select:focus { border-color:#32aaa7; outline:0; box-shadow:0 0 0 3px rgba(50,170,167,.12); }
+    .section-note { margin:0 0 .8rem; color:#7a8b9b; font-size:.78rem; }
+    .permission-note { display:flex; align-items:center; gap:.5rem; padding:.75rem .9rem; margin-bottom:1rem; border:1px solid #dce7f1; border-radius:12px; color:#667b8f; background:#f8fafc; font-size:.8rem; }
+    @media (max-width:900px) { .details-grid,.details-grid.two { grid-template-columns:repeat(2,1fr); }.summary-strip { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:600px) { .inspection-detail-hero { align-items:flex-start; flex-direction:column; }.details-grid,.details-grid.two,.summary-strip { grid-template-columns:1fr; }.details-card-body { padding:.85rem; } }
+</style>
+
+<div class="inspection-detail-page">
+    <div class="inspection-detail-hero">
+        <div><div class="eyebrow">Quality assurance / Saved record</div><h2 class="page-title">Computer quality inspection #{{ inspection.pk }}</h2><p class="muted mb-0">Update the inspection record as additional technical checks are completed.</p></div>
+        <div class="detail-actions"><a href="{% url 'quality-inspections' %}" class="btn btn-light"><i class="bi bi-arrow-left me-2"></i>Inspection records</a>{% if can_edit_inspection %}<button type="submit" form="inspectionEditForm" class="btn btn-primary"><i class="bi bi-save me-2"></i>Save updates</button>{% endif %}</div>
+    </div>
+
+    {% if not can_edit_inspection %}<div class="permission-note"><i class="bi bi-lock"></i> This record is read-only. Only IT Technical and Network Team users can update inspection details.</div>{% endif %}
+
+    <form method="post" id="inspectionEditForm" data-logged-in-user="{{ request.user.username|escapejs }}">
+        {% csrf_token %}
+        <div class="summary-strip">
+            <div class="summary-item"><small>Asset tag</small><strong>{{ inspection.asset_no|default:"—" }}</strong></div>
+            <div class="summary-item"><small>Serial number</small><strong>{{ inspection.serial_number|default:"—" }}</strong></div>
+            <div class="summary-item"><small>Inspection date</small><strong>{{ inspection.inspection_date|date:"M j, Y" }}</strong></div>
+            <div class="summary-item"><small>Last update</small><strong>{{ inspection.created_at|date:"M j, Y H:i"|default:"—" }}</strong></div>
+        </div>
+
+        <section class="details-card"><div class="details-card-header"><div class="details-card-title"><i class="bi bi-person-vcard"></i><span>Inspection and ownership details</span></div><span class="details-card-hint">Editable by technical teams</span></div><div class="details-card-body"><div class="details-grid">
+            <div><label class="field-label">Asset tag</label><input class="readonly-field" readonly value="{{ inspection.asset_no|default:'—' }}"></div>
+            <div><label class="field-label">User name</label><input class="editable-field" name="user_name" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.user_name|default:'' }}"></div>
+            <div><label class="field-label">Position</label><input class="editable-field" name="position" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.position|default:'' }}"></div>
+            <div><label class="field-label">Inspection date</label><input class="editable-field" type="date" name="inspection_date" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.inspection_date|date:'Y-m-d' }}"></div>
+            <div><label class="field-label">Purchased date</label><input class="editable-field" type="date" name="purchased_date" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.purchased_date|date:'Y-m-d' }}"></div>
+            <div><label class="field-label">Assigned date</label><input class="readonly-field" readonly value="{{ inspection.asset.assignments.all.0.start_date|date:'Y-m-d'|default:'—' }}"></div>
+            <div><label class="field-label">Supplier</label><input class="editable-field" name="supplier" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.supplier|default:'' }}"></div>
+            <div><label class="field-label">Inspection result</label><select class="status-select w-100" name="result" {% if not can_edit_inspection %}disabled{% endif %}>{% for value,label in inspection_results %}<option value="{{ value }}" {% if inspection.result == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+            <div><label class="field-label">Created by</label><input class="readonly-field" readonly value="{{ inspection.created_by.display_name|default:'—' }}"></div>
+        </div></div></section>
+
+        <section class="details-card"><div class="details-card-header"><div class="details-card-title"><i class="bi bi-pc-display"></i><span>Computer specifications</span></div><span class="details-card-hint">Asset configuration</span></div><div class="details-card-body"><div class="details-grid">
+            <div><label class="field-label">Computer type</label><input class="editable-field" name="computer_type" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.computer_type|default:'' }}"></div>
+            <div><label class="field-label">Brand</label><input class="editable-field" name="brand" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.brand|default:'' }}"></div>
+            <div><label class="field-label">Model</label><input class="editable-field" name="model" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.model|default:'' }}"></div>
+            <div><label class="field-label">Processor</label><input class="editable-field" name="processor" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.processor|default:'' }}"></div>
+            <div><label class="field-label">Memory</label><input class="editable-field" name="memory" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.memory|default:'' }}"></div>
+            <div><label class="field-label">HDD / SSD</label><input class="editable-field" name="hdd" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.storage|default:'' }}"></div>
+            <div><label class="field-label">ODD</label><input class="editable-field" name="odd" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.optical_drive|default:'' }}"></div>
+            <div><label class="field-label">Serial number</label><input class="editable-field" name="serial_number" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.serial_number|default:'' }}"></div>
+            <div><label class="field-label">Asset number</label><input class="readonly-field" readonly value="{{ inspection.asset_no|default:'—' }}"></div>
+        </div></div></section>
+
+        <section class="details-card"><div class="details-card-header"><div class="details-card-title"><i class="bi bi-tools"></i><span>Hardware inspection</span></div><span class="details-card-hint">Appearance, function, and signature</span></div><div class="details-card-body checks-table-wrap"><p class="section-note">When a row is updated, its signature is automatically assigned to the logged-in technical user.</p><table class="checks-table"><thead><tr><th>Item check</th><th>Appearance check</th><th>Function test</th><th>Signature</th></tr></thead><tbody>{% for key, check in inspection.hardware_checks.items %}<tr class="inspection-check-row"><td>{{ key|title }}</td><td><input class="editable-field row-input" name="hardware_{{ key }}_appearance" {% if not can_edit_inspection %}readonly{% endif %} value="{{ check.appearance|default:'' }}"></td><td><input class="editable-field row-input" name="hardware_{{ key }}_function" {% if not can_edit_inspection %}readonly{% endif %} value="{{ check.function|default:check.value|default:'' }}"></td><td><input class="readonly-field signature-field" name="hardware_{{ key }}_signature" readonly value="{{ check.signature|default:'' }}"></td></tr>{% empty %}<tr><td colspan="4">No hardware details saved.</td></tr>{% endfor %}</tbody></table></div></section>
+
+        <section class="details-card"><div class="details-card-header"><div class="details-card-title"><i class="bi bi-shield-check"></i><span>Software and access inspection</span></div><span class="details-card-hint">Status, remarks, and signatures</span></div><div class="details-card-body checks-table-wrap"><table class="checks-table"><thead><tr><th>Item check</th><th>Activation / access</th><th>Status</th><th>Remark</th><th>Signature</th></tr></thead><tbody>
+            {% for key, check in inspection.software_checks.items %}<tr class="inspection-check-row"><td>{{ key|title }}</td><td><input class="editable-field row-input" name="{{ key }}" {% if not can_edit_inspection %}readonly{% endif %} value="{{ check.value|default:'' }}"></td><td><select class="status-select w-100 row-input" name="{% if key == 'operating_system' %}os_status{% elif key == 'office_application' %}office_status{% elif key == 'antivirus' %}antivirus_status{% else %}other_software_status{% endif %}" {% if not can_edit_inspection %}disabled{% endif %}><option value="">Not set</option><option value="Activated" {% if check.status == 'Activated' %}selected{% endif %}>Activated</option><option value="Active" {% if check.status == 'Active' %}selected{% endif %}>Active</option><option value="Inactive" {% if check.status == 'Inactive' %}selected{% endif %}>Inactive</option><option value="Pending" {% if check.status == 'Pending' %}selected{% endif %}>Pending</option><option value="N/A" {% if check.status == 'N/A' %}selected{% endif %}>N/A</option></select></td><td><input class="editable-field row-input" name="{{ key }}_remark" {% if not can_edit_inspection %}readonly{% endif %} value="{{ check.remark|default:'' }}"></td><td><input class="readonly-field signature-field" name="{{ key }}_signature" readonly value="{{ check.signature|default:'' }}"></td></tr>{% endfor %}
+            {% for key, check in inspection.access_checks.items %}<tr class="inspection-check-row"><td>{{ key|title }}</td><td><input class="editable-field row-input" name="{{ key }}" {% if not can_edit_inspection %}readonly{% endif %} value="{{ check.value|default:'' }}"></td><td><select class="status-select w-100 row-input" name="{{ key }}_status" {% if not can_edit_inspection %}disabled{% endif %}><option value="">Not set</option><option value="Configured" {% if check.status == 'Configured' %}selected{% endif %}>Configured</option><option value="Granted" {% if check.status == 'Granted' %}selected{% endif %}>Granted</option><option value="Enabled" {% if check.status == 'Enabled' %}selected{% endif %}>Enabled</option><option value="Connected" {% if check.status == 'Connected' %}selected{% endif %}>Connected</option><option value="Pending" {% if check.status == 'Pending' %}selected{% endif %}>Pending</option><option value="N/A" {% if check.status == 'N/A' %}selected{% endif %}>N/A</option></select></td><td><input class="editable-field row-input" name="{{ key }}_remark" {% if not can_edit_inspection %}readonly{% endif %} value="{{ check.remark|default:'' }}"></td><td><input class="readonly-field signature-field" name="{{ key }}_signature" readonly value="{{ check.signature|default:'' }}"></td></tr>{% endfor %}
+        </tbody></table></div></section>
+
+        <section class="details-card"><div class="details-card-header"><div class="details-card-title"><i class="bi bi-pen"></i><span>Approval and remarks</span></div><span class="details-card-hint">Final sign-off</span></div><div class="details-card-body"><div class="details-grid two">
+            <div><label class="field-label">Verified by</label><input class="editable-field" name="verified_by" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.verified_by|default:'' }}"></div>
+            <div><label class="field-label">Approved by</label><input class="editable-field" name="approved_by" {% if not can_edit_inspection %}readonly{% endif %} value="{{ inspection.approved_by|default:'' }}"></div>
+            <div style="grid-column:1/-1"><label class="field-label">Remarks</label><textarea class="editable-area" name="remarks" {% if not can_edit_inspection %}readonly{% endif %}>{{ inspection.remarks|default:'' }}</textarea></div>
+        </div></div></section>
+    </form>
+</div>
+
+<script>
+(() => {
+    const form = document.getElementById("inspectionEditForm");
+    if (!form) return;
+    const actor = form.dataset.loggedInUser || "";
+    form.querySelectorAll(".inspection-check-row").forEach((row) => {
+        const signature = row.querySelector(".signature-field");
+        const inputs = row.querySelectorAll(".row-input");
+        if (!signature || !inputs.length || signature.hasAttribute("disabled")) return;
+        const update = () => {
+            const changed = Array.from(inputs).some((field) => String(field.value || "").trim() !== "");
+            if (changed && actor) signature.value = actor;
+        };
+        inputs.forEach((field) => { field.addEventListener("input", update); field.addEventListener("change", update); });
+    });
+})();
+</script>
+{% endblock %}
